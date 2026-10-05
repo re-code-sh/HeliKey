@@ -71,6 +71,8 @@ public class SettingsValues {
     public final boolean mShowsNumberRow;
     public final boolean mShowsNumberRowInSymbols;
     public final boolean mLocalizedNumberRow;
+    public final boolean mRemoveZwnjKey;
+    public final boolean mDoubleSpaceZwnj;
     public final boolean mShowNumberRowHints;
     public final boolean mShowsHints;
     public final boolean mShowsPopupHints;
@@ -209,6 +211,10 @@ public class SettingsValues {
         mShowsNumberRow = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW, Defaults.PREF_SHOW_NUMBER_ROW);
         mShowsNumberRowInSymbols = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW_IN_SYMBOLS, Defaults.PREF_SHOW_NUMBER_ROW_IN_SYMBOLS);
         mLocalizedNumberRow = SubtypeUtilsKt.getHasLocalizedNumberRow(selectedSubtype, prefs);
+        mRemoveZwnjKey = SubtypeUtilsKt.getRemoveZwnjKey(selectedSubtype, prefs);
+        mDoubleSpaceZwnj = mRemoveZwnjKey
+                && SubtypeUtilsKt.getDoubleSpaceZwnj(selectedSubtype, prefs)
+                && inputAttributes.mIsGeneralTextInput;
         mShowNumberRowHints = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW_HINTS, Defaults.PREF_SHOW_NUMBER_ROW_HINTS);
         mShowsHints = prefs.getBoolean(Settings.PREF_SHOW_HINTS, Defaults.PREF_SHOW_HINTS);
         mShowsPopupHints = prefs.getBoolean(Settings.PREF_SHOW_POPUP_HINTS, Defaults.PREF_SHOW_POPUP_HINTS);

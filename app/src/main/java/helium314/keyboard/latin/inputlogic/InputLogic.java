@@ -1204,7 +1204,12 @@ public final class InputLogic {
             insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
         }
 
-        if (tryPerformDoubleSpacePeriod(event, inputTransaction)) {
+        if (inputTransaction.getSettingsValues().mDoubleSpaceZwnj) {
+            if (tryPerformDoubleSpaceZwnj(event, inputTransaction)) {
+                mSpaceState = SpaceState.DOUBLE_ZWNJ;
+                inputTransaction.setRequiresUpdateSuggestions();
+            }
+        } else if (tryPerformDoubleSpacePeriod(event, inputTransaction)) {
             mSpaceState = SpaceState.DOUBLE;
             inputTransaction.setRequiresUpdateSuggestions();
             StatsUtils.onDoubleSpacePeriod();
@@ -1359,7 +1364,13 @@ public final class InputLogic {
                 // reverting any autocorrect at this point. So we can safely return.
                 return;
             }
-            if (SpaceState.DOUBLE == inputTransaction.getSpaceState()) {
+            if (SpaceState.DOUBLE_ZWNJ == inputTransaction.getSpaceState()) {
+                cancelDoubleSpacePeriodCountdown();
+                if (mConnection.revertDoubleSpaceZwnj()) {
+                    inputTransaction.setRequiresUpdateSuggestions();
+                    return;
+                }
+            } else if (SpaceState.DOUBLE == inputTransaction.getSpaceState()) {
                 cancelDoubleSpacePeriodCountdown();
                 if (mConnection.revertDoubleSpacePeriod(inputTransaction.getSettingsValues().mSpacingAndPunctuations)) {
                     // No need to reset mSpaceState, it has already be done (that's why we
@@ -1589,6 +1600,40 @@ public final class InputLogic {
     public boolean isDoubleSpacePeriodCountdownActive(final InputTransaction inputTransaction) {
         return inputTransaction.getTimestamp() - mDoubleSpacePeriodCountdownStart
                 < inputTransaction.getSettingsValues().mDoubleSpacePeriodTimeout;
+    }
+
+    private boolean tryPerformDoubleSpaceZwnj(final Event event,
+            final InputTransaction inputTransaction) {
+        if (!inputTransaction.getSettingsValues().mDoubleSpaceZwnj
+                || Constants.CODE_SPACE != event.getCodePoint()
+                || !isDoubleSpacePeriodCountdownActive(inputTransaction)) {
+            return false;
+        }
+        final CharSequence lastTwo = mConnection.getTextBeforeCursor(3, 0);
+        if (null == lastTwo) return false;
+        final int length = lastTwo.length();
+        if (length < 2) return false;
+        if (lastTwo.charAt(length - 1) != Constants.CODE_SPACE) {
+            return false;
+        }
+        final int firstCodePoint = Character.isSurrogatePair(lastTwo.charAt(0), lastTwo.charAt(1))
+                        ? Character.codePointAt(lastTwo, length - 3)
+                        : lastTwo.charAt(length - 2);
+        if (canBeFollowedByDoubleSpaceZwnj(firstCodePoint)) {
+            cancelDoubleSpacePeriodCountdown();
+            mConnection.deleteTextBeforeCursor(1);
+            mConnection.commitText(Constants.STRING_ZWNJ, 1);
+            inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
+            inputTransaction.setRequiresUpdateSuggestions();
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean canBeFollowedByDoubleSpaceZwnj(final int codePoint) {
+        return Character.isLetterOrDigit(codePoint)
+                || Character.getType(codePoint) == Character.NON_SPACING_MARK
+                || Character.getType(codePoint) == Character.COMBINING_SPACING_MARK;
     }
 
     /**

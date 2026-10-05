@@ -307,6 +307,12 @@
     <string name="localized_number_row">Localize number row</string>
     <!-- Description of the settings to localize number row -->
     <string name="localized_number_row_summary">Prefer localized over latin numbers</string>
+    <!-- Half-space (ZWNJ) layout options -->
+    <string name="zwnj_key_title">Half-space key</string>
+    <string name="remove_zwnj_key">Remove half-space key</string>
+    <string name="remove_zwnj_key_summary">Remove the half-space (ZWNJ) key next to the space bar</string>
+    <string name="double_space_zwnj">Double-tap space for half-space</string>
+    <string name="double_space_zwnj_summary">Insert half-space (ZWNJ) when double-tapping space</string>
     <!-- Title of the setting to enable number row hints -->
     <string name="number_row_hints">Show hints on number row</string>
     <!-- Title of the setting to save subtype per app -->

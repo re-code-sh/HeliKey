@@ -37,6 +37,9 @@ public class SpaceState {
     // Phantom spaces happen when a user chooses a word from the suggestion strip. In this state,
     // non-separators insert a space before they get inserted.
     public static final int PHANTOM = 4;
+    // Double space ZWNJ: the state where user pressed space twice quickly and it became ZWNJ.
+    // In this state, pressing backspace will revert ZWNJ back to a single space.
+    public static final int DOUBLE_ZWNJ = 5;
 
     private SpaceState() {
         // This class is not publicly instantiable.

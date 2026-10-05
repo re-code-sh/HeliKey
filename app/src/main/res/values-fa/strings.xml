@@ -213,6 +213,12 @@
     <string name="number_row_in_symbols">نمایش ردیف اعداد در بخش علائم (Symbols)</string>
     <string name="localized_number_row">بومی‌سازی ردیف اعداد</string>
     <string name="localized_number_row_summary">اولویت دادن به اعداد بومی (فارسی) نسبت به لاتین</string>
+    <!-- گزینه‌های کلید نیم‌فاصله -->
+    <string name="zwnj_key_title">کلید نیم‌فاصله</string>
+    <string name="remove_zwnj_key">حذف کلید نیم‌فاصله</string>
+    <string name="remove_zwnj_key_summary">برداشتن کلید نیم‌فاصله از کنار کلید فاصله</string>
+    <string name="double_space_zwnj">دابل‌تپ فاصله برای نیم‌فاصله</string>
+    <string name="double_space_zwnj_summary">درج نیم‌فاصله با دو بار ضربه زدن سریع روی فاصله</string>
     <string name="number_row_hints">نمایش راهنما در ردیف اعداد</string>
     <string name="save_subtype_per_app">به‌خاطرسپاری زبان برای هر برنامه</string>
     <string name="popup_order_and_hint_source">ترتیب کلیدهای بازشو و منبع راهنما</string>

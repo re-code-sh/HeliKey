@@ -16,6 +16,7 @@ import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.settings.SettingsSubtype.Companion.getExtraValueOf
 import helium314.keyboard.latin.utils.SubtypeSettings.isEnabled
+import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import org.xmlpull.v1.XmlPullParser
 import java.util.Locale
 
@@ -71,6 +72,18 @@ fun getResourceSubtypes(resources: Resources): List<InputMethodSubtype> {
 fun getHasLocalizedNumberRow(subtype: InputMethodSubtype, prefs: SharedPreferences): Boolean =
     subtype.getExtraValueOf(ExtraValue.LOCALIZED_NUMBER_ROW)?.toBoolean()
         ?: prefs.getBoolean(Settings.PREF_LOCALIZED_NUMBER_ROW, Defaults.PREF_LOCALIZED_NUMBER_ROW)
+
+fun getRemoveZwnjKey(subtype: InputMethodSubtype, prefs: SharedPreferences): Boolean {
+    if (!LocaleKeyboardInfos.hasZwnjKey(subtype.locale())) return false
+    return subtype.getExtraValueOf(ExtraValue.REMOVE_ZWNJ_KEY)?.toBoolean()
+        ?: prefs.getBoolean(Settings.PREF_REMOVE_ZWNJ_KEY, Defaults.PREF_REMOVE_ZWNJ_KEY)
+}
+
+fun getDoubleSpaceZwnj(subtype: InputMethodSubtype, prefs: SharedPreferences): Boolean {
+    if (!LocaleKeyboardInfos.hasZwnjKey(subtype.locale())) return false
+    return subtype.getExtraValueOf(ExtraValue.DOUBLE_SPACE_ZWNJ)?.toBoolean()
+        ?: prefs.getBoolean(Settings.PREF_DOUBLE_SPACE_ZWNJ, Defaults.PREF_DOUBLE_SPACE_ZWNJ)
+}
 
 fun getPopupKeyOrder(subtype: InputMethodSubtype, prefs: SharedPreferences): List<String> {
     val string = subtype.getExtraValueOf(ExtraValue.POPUP_ORDER)

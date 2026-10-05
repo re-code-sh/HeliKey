@@ -148,6 +148,8 @@ object Defaults {
     const val PREF_SHOW_NUMBER_ROW = false
     const val PREF_SHOW_NUMBER_ROW_IN_SYMBOLS = true
     const val PREF_LOCALIZED_NUMBER_ROW = true
+    const val PREF_REMOVE_ZWNJ_KEY = false
+    const val PREF_DOUBLE_SPACE_ZWNJ = false
     const val PREF_SHOW_NUMBER_ROW_HINTS = false
     const val PREF_CUSTOM_CURRENCY_KEY = ""
     const val PREF_SHOW_HINTS = true

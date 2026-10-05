@@ -103,6 +103,7 @@ fun SubtypeScreen(
     fun setCurrentSubtype(subtype: SettingsSubtype) {
         SubtypeUtilsAdditional.changeAdditionalSubtype(currentSubtype, subtype, ctx)
         currentSubtypeString = subtype.toPref()
+        KeyboardSwitcher.getInstance().reloadKeyboard()
     }
     LaunchedEffect(currentSubtypeString) {
         if (ScriptUtils.scriptSupportsUppercase(currentSubtype.locale)) return@LaunchedEffect
@@ -225,6 +226,56 @@ fun SubtypeScreen(
                             )
                             DefaultButton(checked == null) {
                                 setCurrentSubtype(currentSubtype.without(ExtraValue.LOCALIZED_NUMBER_ROW))
+                            }
+                        }
+                    }
+                }
+                if (LocaleKeyboardInfos.hasZwnjKey(currentSubtype.locale)) {
+                    val removeZwnjChecked = currentSubtype.getExtraValueOf(ExtraValue.REMOVE_ZWNJ_KEY)?.toBoolean()
+                    val isRemoveZwnjActive = removeZwnjChecked ?: prefs.getBoolean(
+                        Settings.PREF_REMOVE_ZWNJ_KEY,
+                        Defaults.PREF_REMOVE_ZWNJ_KEY
+                    )
+                    WithSmallTitle(stringResource(R.string.zwnj_key_title)) {
+                        ActionRow {
+                            Text(
+                                stringResource(R.string.remove_zwnj_key),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 10.dp)
+                            )
+                            Switch(
+                                checked = isRemoveZwnjActive,
+                                onCheckedChange = {
+                                    setCurrentSubtype(currentSubtype.with(ExtraValue.REMOVE_ZWNJ_KEY, it.toString()))
+                                }
+                            )
+                            DefaultButton(removeZwnjChecked == null) {
+                                setCurrentSubtype(currentSubtype.without(ExtraValue.REMOVE_ZWNJ_KEY))
+                            }
+                        }
+                        if (isRemoveZwnjActive) {
+                            val doubleSpaceZwnjChecked = currentSubtype.getExtraValueOf(ExtraValue.DOUBLE_SPACE_ZWNJ)?.toBoolean()
+                            val isDoubleSpaceZwnjActive = doubleSpaceZwnjChecked ?: prefs.getBoolean(
+                                Settings.PREF_DOUBLE_SPACE_ZWNJ,
+                                Defaults.PREF_DOUBLE_SPACE_ZWNJ
+                            )
+                            ActionRow {
+                                Text(
+                                    stringResource(R.string.double_space_zwnj),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(start = 24.dp)
+                                )
+                                Switch(
+                                    checked = isDoubleSpaceZwnjActive,
+                                    onCheckedChange = {
+                                        setCurrentSubtype(currentSubtype.with(ExtraValue.DOUBLE_SPACE_ZWNJ, it.toString()))
+                                    }
+                                )
+                                DefaultButton(doubleSpaceZwnjChecked == null) {
+                                    setCurrentSubtype(currentSubtype.without(ExtraValue.DOUBLE_SPACE_ZWNJ))
+                                }
                             }
                         }
                     }
