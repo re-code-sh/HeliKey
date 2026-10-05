@@ -255,7 +255,7 @@ fun SubtypeScreen(
                                 setCurrentSubtype(currentSubtype.without(ExtraValue.REMOVE_ZWNJ_KEY))
                             }
                         }
-                        if (isRemoveZwnjActive) {
+                        if (!isRemoveZwnjActive) {
                             val doubleSpaceZwnjChecked = currentSubtype.getExtraValueOf(ExtraValue.DOUBLE_SPACE_ZWNJ)?.toBoolean()
                             val isDoubleSpaceZwnjActive = doubleSpaceZwnjChecked ?: prefs.getBoolean(
                                 Settings.PREF_DOUBLE_SPACE_ZWNJ,
