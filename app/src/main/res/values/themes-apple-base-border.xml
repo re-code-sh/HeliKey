@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="KeyboardTheme.Apple_Base_Border"
+        parent="KeyboardTheme.Apple_Base">
+        <item name="keyboardStyle">@style/Keyboard.Apple_Base_Border</item>
+        <item name="keyboardViewStyle">@style/KeyboardView.Apple_Base_Border</item>
+        <item name="mainKeyboardViewStyle">@style/MainKeyboardView.Apple_Base_Border</item>
+        <item name="emojiPalettesViewStyle">@style/EmojiPalettesView.Apple_Base_Border</item>
+        <item name="clipboardHistoryViewStyle">@style/ClipboardHistoryView.Apple_Base_Border</item>
+        <item name="popupKeysKeyboardViewStyle">@style/PopupKeysKeyboardView.Apple_Base_Border</item>
+        <item name="suggestionStripViewStyle">@style/SuggestionStripView.Apple_Base_Border</item>
+    </style>
+    <style
+        name="Keyboard.Apple_Base_Border"
+        parent="Keyboard"
+        >
+        <item name="themeId">AppleBaseBorder</item>
+    </style>
+    <style
+        name="KeyboardView.Apple_Base_Border"
+        parent="KeyboardView.Apple_Base">
+        <item name="android:background">@drawable/keyboard_background_lxx_base_border</item>
+        <item name="keyBackground">@drawable/btn_keyboard_key_apple_base_border</item>
+        <item name="functionalKeyBackground">@drawable/btn_keyboard_key_functional_apple_base_border</item>
+        <item name="spacebarBackground">@drawable/btn_keyboard_key_apple_base_border</item>
+    </style>
+
+    <style
+        name="MainKeyboardView.Apple_Base_Border"
+        parent="MainKeyboardView.Apple_Base">
+        <item name="android:background">@drawable/keyboard_background_lxx_base_border</item>
+        <item name="keyBackground">@drawable/btn_keyboard_key_apple_base_border</item>
+        <item name="functionalKeyBackground">@drawable/btn_keyboard_key_functional_apple_base_border</item>
+        <item name="spacebarBackground">@drawable/btn_keyboard_key_apple_base_border</item>
+    </style>
+
+    <style
+        name="EmojiPalettesView.Apple_Base_Border"
+        parent="EmojiPalettesView.Apple_Base">
+        <item name="categoryPageIndicatorBackground">@color/emoji_tab_page_indicator_background_lxx_base_border</item>
+        <item name="android:background">@drawable/keyboard_background_lxx_base_border</item>
+        <item name="keyBackground">@drawable/btn_keyboard_key_apple_base_border</item>
+        <item name="functionalKeyBackground">@drawable/btn_keyboard_key_functional_apple_base_border</item>
+        <item name="spacebarBackground">@drawable/btn_keyboard_key_apple_base_border</item>
+    </style>
+
+    <style
+        name="ClipboardHistoryView.Apple_Base_Border"
+        parent="ClipboardHistoryView.Apple_Base">
+        <item name="android:background">@drawable/keyboard_background_lxx_base_border</item>
+        <item name="keyBackground">@drawable/btn_keyboard_key_apple_base_border</item>
+        <item name="functionalKeyBackground">@drawable/btn_keyboard_key_functional_apple_base_border</item>
+    </style>
+
+    <style
+        name="PopupKeysKeyboardView.Apple_Base_Border"
+        parent="PopupKeysKeyboardView.Apple_Base">
+        <item name="keyBackground">@drawable/btn_keyboard_key_apple_base_border</item>
+        <item name="functionalKeyBackground">@drawable/btn_keyboard_key_functional_apple_base_border</item>
+    </style>
+
+    <style
+        name="SuggestionStripView.Apple_Base_Border"
+        parent="SuggestionStripView.Apple_Base">
+        <item name="android:background">@drawable/keyboard_background_lxx_base_border</item>
+    </style>
+</resources>

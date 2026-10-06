@@ -556,4 +556,7 @@
     <string name="gesture_data_add_key">افزودن کلید نوار ابزار</string>
     <string name="gesture_data_no_known_dict">جمع‌آوری در پس‌زمینه فقط کلماتی را جمع‌آوری می‌کند که از واژه‌نامه‌های داخلی برنامه یا واژه‌نامه‌های موجود در &lt;a href=%s&gt;مخزن واژه‌نامه‌ها&lt;/a&gt; می‌آیند. در حال حاضر هیچ واژه‌نامه‌ای از این نوع فعال ندارید.</string>
     <string name="gesture_data_swipe_o_scope">ابزار مصورسازی داده‌های اشاره‌ای: &lt;a href=%s&gt;Swipe-O-Scope&lt;/a&gt;</string>
+    <string name="style_name_Apple">اپل (iOS)</string>
+    <string name="theme_name_ios_light">آی‌او‌اس روشن (iOS Light)</string>
+    <string name="theme_name_ios_dark">آی‌او‌اس تیره (iOS Dark)</string>
 </resources>

@@ -719,6 +719,8 @@ New dictionary:
     <string name="icon_style">Icon style</string>
     <!-- Style name for Rounded style -->
     <string name="style_name_Rounded" tools:keep="@string/style_name_Rounded">Rounded</string>
+    <!-- Style name for Apple style -->
+    <string name="style_name_Apple" tools:keep="@string/style_name_Apple">Apple</string>
     <!-- Option for choosing colors -->
     <string name="theme_colors">Colors</string>
     <!-- Option for choosing colors for night mode -->
@@ -735,6 +737,10 @@ New dictionary:
     <string name="theme_navbar">Color navigation bar</string>
     <!-- Theme name for light theme -->
     <string name="theme_name_light" tools:keep="@string/theme_name_light">Light</string>
+    <!-- Theme name for iOS light theme -->
+    <string name="theme_name_ios_light" tools:keep="@string/theme_name_ios_light">iOS Light</string>
+    <!-- Theme name for iOS dark theme -->
+    <string name="theme_name_ios_dark" tools:keep="@string/theme_name_ios_dark">iOS Dark</string>
     <!-- Theme name for holo white theme -->
     <string name="theme_name_holo_white" tools:keep="@string/theme_name_holo_white">Holo White</string>
     <!-- Theme name for dark theme (based on old no-border dark) -->

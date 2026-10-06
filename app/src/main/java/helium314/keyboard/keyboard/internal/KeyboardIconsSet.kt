@@ -25,6 +25,7 @@ class KeyboardIconsSet private constructor() {
         val defaultIds = when (iconStyle) {
             KeyboardTheme.STYLE_HOLO -> keyboardIconsHolo
             KeyboardTheme.STYLE_ROUNDED -> keyboardIconsRounded
+            KeyboardTheme.STYLE_APPLE -> keyboardIconsApple
             else -> keyboardIconsMaterial
         }
         val overrideIds = customIconIds(context, prefs)
@@ -289,14 +290,78 @@ class KeyboardIconsSet private constructor() {
             }
         } }
 
+        private val keyboardIconsApple by lazy { hashMapOf(
+            NAME_SHIFT_KEY to                   R.drawable.sym_keyboard_shift_apple,
+            NAME_SHIFT_KEY_SHIFTED to           R.drawable.sym_keyboard_shifted_apple,
+            NAME_SHIFT_KEY_LOCKED to            R.drawable.sym_keyboard_shift_lock_apple,
+            NAME_DELETE_KEY to                  R.drawable.sym_keyboard_delete_apple,
+            NAME_ENTER_KEY to                   R.drawable.sym_keyboard_return_apple,
+            NAME_GO_KEY to                      R.drawable.sym_keyboard_go_apple,
+            NAME_SEARCH_KEY to                  R.drawable.sym_keyboard_search_apple,
+            NAME_SEND_KEY to                    R.drawable.sym_keyboard_send_apple,
+            NAME_DONE_KEY to                    R.drawable.sym_keyboard_done_apple,
+            NAME_NEXT_KEY to                    R.drawable.ic_arrow_right_apple,
+            NAME_PREVIOUS_KEY to                R.drawable.ic_arrow_left_apple,
+            NAME_TAB_KEY to                     R.drawable.sym_keyboard_tab_apple,
+            NAME_SPACE_KEY_FOR_NUMBER_LAYOUT to R.drawable.sym_keyboard_space_apple,
+            NAME_SHORTCUT_KEY_DISABLED to       R.drawable.sym_keyboard_voice_off_apple,
+            NAME_LANGUAGE_SWITCH_KEY to         R.drawable.sym_keyboard_language_switch_apple,
+            NAME_ZWNJ_KEY to                    R.drawable.sym_keyboard_zwnj_apple,
+            NAME_ZWJ_KEY to                     R.drawable.sym_keyboard_zwj_apple,
+            NAME_STOP_ONEHANDED_KEY to          R.drawable.sym_keyboard_stop_onehanded_apple,
+            NAME_SWITCH_ONEHANDED_KEY to        R.drawable.ic_arrow_left_apple,
+            NAME_RESIZE_ONEHANDED_KEY to        R.drawable.ic_arrow_horizontal,
+            NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right_apple,
+            NAME_BIN to                         R.drawable.ic_bin_apple,
+        ).apply {
+            ToolbarKey.entries.forEach {
+                put(it.name.lowercase(Locale.US), when (it) {
+                    ToolbarKey.VOICE -> R.drawable.sym_keyboard_voice_apple
+                    ToolbarKey.CLIPBOARD -> R.drawable.sym_keyboard_clipboard_apple
+                    ToolbarKey.NUMPAD -> R.drawable.sym_keyboard_numpad_key_apple
+                    ToolbarKey.DPAD -> R.drawable.ic_dpad
+                    ToolbarKey.UNDO -> R.drawable.ic_undo_apple
+                    ToolbarKey.REDO -> R.drawable.ic_redo_apple
+                    ToolbarKey.SETTINGS -> R.drawable.sym_keyboard_settings_apple
+                    ToolbarKey.SELECT_ALL -> R.drawable.ic_select_all_apple
+                    ToolbarKey.SELECT_WORD -> R.drawable.ic_select_apple
+                    ToolbarKey.COPY -> R.drawable.sym_keyboard_copy_apple
+                    ToolbarKey.CUT -> R.drawable.sym_keyboard_cut_apple
+                    ToolbarKey.PASTE -> R.drawable.sym_keyboard_paste_apple
+                    ToolbarKey.ONE_HANDED -> R.drawable.sym_keyboard_start_onehanded_apple
+                    ToolbarKey.FLOATING -> R.drawable.ic_drag_indicator
+                    ToolbarKey.INCOGNITO -> R.drawable.sym_keyboard_incognito_apple
+                    ToolbarKey.AUTOCORRECT -> R.drawable.ic_autocorrect
+                    ToolbarKey.CLEAR_CLIPBOARD -> R.drawable.sym_keyboard_clear_clipboard_apple
+                    ToolbarKey.CLOSE_HISTORY -> R.drawable.ic_close_apple
+                    ToolbarKey.EMOJI -> R.drawable.sym_keyboard_smiley_apple
+                    ToolbarKey.LEFT -> R.drawable.ic_dpad_left
+                    ToolbarKey.RIGHT -> R.drawable.ic_dpad_right
+                    ToolbarKey.UP -> R.drawable.ic_dpad_up
+                    ToolbarKey.DOWN -> R.drawable.ic_dpad_down
+                    ToolbarKey.WORD_LEFT -> R.drawable.ic_word_left
+                    ToolbarKey.WORD_RIGHT -> R.drawable.ic_word_right
+                    ToolbarKey.PAGE_UP -> R.drawable.ic_page_up
+                    ToolbarKey.PAGE_DOWN -> R.drawable.ic_page_down
+                    ToolbarKey.FULL_LEFT -> R.drawable.ic_to_start
+                    ToolbarKey.FULL_RIGHT -> R.drawable.ic_to_end
+                    ToolbarKey.PAGE_START -> R.drawable.ic_page_start
+                    ToolbarKey.PAGE_END -> R.drawable.ic_page_end
+                    ToolbarKey.SPLIT -> R.drawable.ic_ime_switcher
+                    ToolbarKey.BACKGROUND_GATHERING -> R.drawable.ic_settings_gesture
+                })
+            }
+        } }
+
         fun getAllIcons(context: Context): Map<String, List<Int>> {
             // currently active style first
             val iconStyle = context.prefs().getString(Settings.PREF_ICON_STYLE, Defaults.PREF_ICON_STYLE(context.prefs()))
             val iconsMap = keyboardIconsMaterial.entries.associateTo(HashMap()) { (name, id) ->
                 name to when (iconStyle) {
-                    KeyboardTheme.STYLE_HOLO -> listOfNotNull(keyboardIconsHolo[name], keyboardIconsRounded[name], id)
-                    KeyboardTheme.STYLE_ROUNDED -> listOfNotNull(keyboardIconsRounded[name], id, keyboardIconsHolo[name])
-                    else -> listOfNotNull(id, keyboardIconsRounded[name], keyboardIconsHolo[name])
+                    KeyboardTheme.STYLE_HOLO -> listOfNotNull(keyboardIconsHolo[name], keyboardIconsRounded[name], keyboardIconsApple[name], id)
+                    KeyboardTheme.STYLE_ROUNDED -> listOfNotNull(keyboardIconsRounded[name], id, keyboardIconsApple[name], keyboardIconsHolo[name])
+                    KeyboardTheme.STYLE_APPLE -> listOfNotNull(keyboardIconsApple[name], id, keyboardIconsRounded[name], keyboardIconsHolo[name])
+                    else -> listOfNotNull(id, keyboardIconsApple[name], keyboardIconsRounded[name], keyboardIconsHolo[name])
                 }
             }
 
