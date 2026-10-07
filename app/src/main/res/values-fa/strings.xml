@@ -217,12 +217,8 @@
     <string name="zwnj_key_title">کلید نیم‌فاصله</string>
     <string name="remove_zwnj_key">حذف کلید نیم‌فاصله</string>
     <string name="remove_zwnj_key_summary">برداشتن کلید نیم‌فاصله از کنار کلید فاصله</string>
-    <string name="double_space_zwnj">دابل‌تپ برای نیم‌فاصله</string>
-    <string name="double_space_zwnj_summary">یک بار ضربه: فاصله، دو بار ضربه: نیم‌فاصله</string>
-    <string name="comma_key_short_hold">تأخیر لمس کلید ویرگول</string>
-    <string name="comma_key_short_hold_summary">نیاز به مکث کوتاه (۵۰ میلی‌ثانیه) برای تایپ ویرگول جهت جلوگیری از لمس تصادفی</string>
-    <string name="fixed_toolbar_direction_ltr">جهت ثابت نوار ابزار</string>
-    <string name="fixed_toolbar_direction_ltr_summary">نمایش همیشگی نوار ابزار از چپ به راست (LTR) بدون توجه به جهت زبان</string>
+    <string name="double_space_zwnj">دابل‌تپ فاصله برای نیم‌فاصله</string>
+    <string name="double_space_zwnj_summary">درج نیم‌فاصله با دو بار ضربه زدن سریع روی فاصله</string>
     <string name="number_row_hints">نمایش راهنما در ردیف اعداد</string>
     <string name="save_subtype_per_app">به‌خاطرسپاری زبان برای هر برنامه</string>
     <string name="popup_order_and_hint_source">ترتیب کلیدهای بازشو و منبع راهنما</string>

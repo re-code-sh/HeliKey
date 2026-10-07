@@ -64,7 +64,6 @@ fun ToolbarScreen(
         if (toolbarMode == ToolbarMode.EXPANDABLE) Settings.PREF_AUTO_HIDE_TOOLBAR else null,
         if (toolbarMode != ToolbarMode.HIDDEN) Settings.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD else null,
         if (toolbarMode != ToolbarMode.HIDDEN) Settings.PREF_VARIABLE_TOOLBAR_DIRECTION else null,
-        if (toolbarMode != ToolbarMode.HIDDEN) Settings.PREF_FIXED_TOOLBAR_DIRECTION_LTR else null,
     )
     SearchSettingsScreen(
         onClickBack = onClickBack,
@@ -142,13 +141,6 @@ fun createToolbarSettings(context: Context) = listOf(
         R.string.var_toolbar_direction, R.string.var_toolbar_direction_summary)
     {
         SwitchPreference(it, Defaults.PREF_VARIABLE_TOOLBAR_DIRECTION)
-    },
-    Setting(context, Settings.PREF_FIXED_TOOLBAR_DIRECTION_LTR,
-        R.string.fixed_toolbar_direction_ltr, R.string.fixed_toolbar_direction_ltr_summary)
-    {
-        SwitchPreference(it, Defaults.PREF_FIXED_TOOLBAR_DIRECTION_LTR) {
-            KeyboardSwitcher.getInstance().setThemeNeedsReload()
-        }
     }
 )
 

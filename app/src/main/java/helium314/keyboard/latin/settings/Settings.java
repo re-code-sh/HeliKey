@@ -95,7 +95,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_SHOW_EMOJI_KEY = "show_emoji_key";
     public static final String PREF_SHOW_DPAD_KEY = "show_dpad_key";
    public static final String PREF_VARIABLE_TOOLBAR_DIRECTION = "var_toolbar_direction";
-    public static final String PREF_FIXED_TOOLBAR_DIRECTION_LTR = "fixed_toolbar_direction_ltr";
     public static final String PREF_ADDITIONAL_SUBTYPES = "additional_subtypes";
     public static final String PREF_ENABLE_SPLIT_KEYBOARD = "split_keyboard";
     public static final String PREF_ENABLE_SPLIT_KEYBOARD_LANDSCAPE = "split_keyboard_landscape";
@@ -157,7 +156,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_LOCALIZED_NUMBER_ROW = "localized_number_row";
     public static final String PREF_REMOVE_ZWNJ_KEY = "remove_zwnj_key";
     public static final String PREF_DOUBLE_SPACE_ZWNJ = "double_space_zwnj";
-    public static final String PREF_COMMA_KEY_SHORT_HOLD = "comma_key_short_hold";
     public static final String PREF_SHOW_NUMBER_ROW_HINTS = "show_number_row_hints";
     public static final String PREF_CUSTOM_CURRENCY_KEY = "custom_currency_key";
 

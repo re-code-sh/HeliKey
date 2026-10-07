@@ -515,8 +515,7 @@ public final class InputLogic {
         }
 
         // TODO: Consolidate the double-space period timer, mLastKeyTime, and the space state.
-        if (processedEvent.getCodePoint() != Constants.CODE_SPACE
-                && (!settingsValues.mDoubleSpaceZwnj || processedEvent.getCodePoint() != Constants.CODE_ZWNJ)) {
+        if (processedEvent.getCodePoint() != Constants.CODE_SPACE) {
             cancelDoubleSpacePeriodCountdown();
         }
 
@@ -977,22 +976,8 @@ public final class InputLogic {
             final InputTransaction inputTransaction,
             final LatinIME.UIHandler handler) {
         final int codePoint = event.getCodePoint();
-        final SettingsValues sv = inputTransaction.getSettingsValues();
-        if (sv.mDoubleSpaceZwnj && codePoint == Constants.CODE_ZWNJ) {
-            if (tryPerformDoubleSpaceZwnj(event, inputTransaction)) {
-                mSpaceState = SpaceState.DOUBLE_ZWNJ;
-                inputTransaction.setRequiresUpdateSuggestions();
-                return;
-            } else {
-                mSpaceState = SpaceState.NONE;
-                final Event spaceEvent = Event.createSoftwareKeypressEvent(
-                        Constants.CODE_SPACE, event.getKeyCode(), event.getX(), event.getY(), event.isKeyRepeat());
-                handleSeparatorEvent(spaceEvent, inputTransaction, handler);
-                startDoubleSpacePeriodCountdown(inputTransaction);
-                return;
-            }
-        }
         mSpaceState = SpaceState.NONE;
+        final SettingsValues sv = inputTransaction.getSettingsValues();
 
         // wrap / unwrap selected text in codepoint pairs
         if (!mWordComposer.isComposingWord() && mConnection.hasSelection()) { // we should never be composing when something is selected
@@ -1219,7 +1204,12 @@ public final class InputLogic {
             insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
         }
 
-        if (tryPerformDoubleSpacePeriod(event, inputTransaction)) {
+        if (inputTransaction.getSettingsValues().mDoubleSpaceZwnj) {
+            if (tryPerformDoubleSpaceZwnj(event, inputTransaction)) {
+                mSpaceState = SpaceState.DOUBLE_ZWNJ;
+                inputTransaction.setRequiresUpdateSuggestions();
+            }
+        } else if (tryPerformDoubleSpacePeriod(event, inputTransaction)) {
             mSpaceState = SpaceState.DOUBLE;
             inputTransaction.setRequiresUpdateSuggestions();
             StatsUtils.onDoubleSpacePeriod();
@@ -1615,23 +1605,29 @@ public final class InputLogic {
     private boolean tryPerformDoubleSpaceZwnj(final Event event,
             final InputTransaction inputTransaction) {
         if (!inputTransaction.getSettingsValues().mDoubleSpaceZwnj
-                || Constants.CODE_ZWNJ != event.getCodePoint()
+                || Constants.CODE_SPACE != event.getCodePoint()
                 || !isDoubleSpacePeriodCountdownActive(inputTransaction)) {
             return false;
         }
-        final CharSequence lastTwo = mConnection.getTextBeforeCursor(2, 0);
+        final CharSequence lastTwo = mConnection.getTextBeforeCursor(3, 0);
         if (null == lastTwo) return false;
         final int length = lastTwo.length();
-        if (length < 1) return false;
+        if (length < 2) return false;
         if (lastTwo.charAt(length - 1) != Constants.CODE_SPACE) {
             return false;
         }
-        cancelDoubleSpacePeriodCountdown();
-        mConnection.deleteTextBeforeCursor(1);
-        mConnection.commitText(Constants.STRING_ZWNJ, 1);
-        inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
-        inputTransaction.setRequiresUpdateSuggestions();
-        return true;
+        final int firstCodePoint = Character.isSurrogatePair(lastTwo.charAt(0), lastTwo.charAt(1))
+                        ? Character.codePointAt(lastTwo, length - 3)
+                        : lastTwo.charAt(length - 2);
+        if (canBeFollowedByDoubleSpaceZwnj(firstCodePoint)) {
+            cancelDoubleSpacePeriodCountdown();
+            mConnection.deleteTextBeforeCursor(1);
+            mConnection.commitText(Constants.STRING_ZWNJ, 1);
+            inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
+            inputTransaction.setRequiresUpdateSuggestions();
+            return true;
+        }
+        return false;
     }
 
     private static boolean canBeFollowedByDoubleSpaceZwnj(final int codePoint) {

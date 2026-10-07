@@ -79,9 +79,8 @@ fun PreferencesScreen(
         if (SubtypeSettings.getEnabledSubtypes(true).any { LocaleKeyboardInfos.hasZwnjKey(it.locale()) })
             Settings.PREF_REMOVE_ZWNJ_KEY else null,
         if (SubtypeSettings.getEnabledSubtypes(true).any { LocaleKeyboardInfos.hasZwnjKey(it.locale()) }
-            && !prefs.getBoolean(Settings.PREF_REMOVE_ZWNJ_KEY, Defaults.PREF_REMOVE_ZWNJ_KEY))
+            && prefs.getBoolean(Settings.PREF_REMOVE_ZWNJ_KEY, Defaults.PREF_REMOVE_ZWNJ_KEY))
             Settings.PREF_DOUBLE_SPACE_ZWNJ else null,
-        Settings.PREF_COMMA_KEY_SHORT_HOLD,
         Settings.PREF_REMOVE_REDUNDANT_POPUPS,
         R.string.settings_category_clipboard_history,
         Settings.PREF_ENABLE_CLIPBOARD_HISTORY,
@@ -175,9 +174,6 @@ fun createPreferencesSettings(context: Context) = listOf(
     },
     Setting(context, Settings.PREF_DOUBLE_SPACE_ZWNJ, R.string.double_space_zwnj, R.string.double_space_zwnj_summary) {
         SwitchPreference(it, Defaults.PREF_DOUBLE_SPACE_ZWNJ)
-    },
-    Setting(context, Settings.PREF_COMMA_KEY_SHORT_HOLD, R.string.comma_key_short_hold, R.string.comma_key_short_hold_summary) {
-        SwitchPreference(it, Defaults.PREF_COMMA_KEY_SHORT_HOLD)
     },
     Setting(context, Settings.PREF_REMOVE_REDUNDANT_POPUPS,
         R.string.remove_redundant_popups, R.string.remove_redundant_popups_summary)
