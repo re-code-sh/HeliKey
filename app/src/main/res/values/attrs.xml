@@ -196,8 +196,6 @@
             <enum name="LXXBaseBorder" value="2" />
             <enum name="RoundedBase" value="3" />
             <enum name="RoundedBaseBorder" value="4" />
-            <enum name="AppleBase" value="5" />
-            <enum name="AppleBaseBorder" value="6" />
         </attr>
         <!-- Touch position correction -->
         <attr name="touchPositionCorrectionData" format="reference" />
@@ -351,8 +349,6 @@
             <enum name="LXXBaseBorder" value="2" />
             <enum name="RoundedBase" value="3" />
             <enum name="RoundedBaseBorder" value="4" />
-            <enum name="AppleBase" value="5" />
-            <enum name="AppleBaseBorder" value="6" />
         </attr>
         <attr name="navigateNext" format="boolean" />
         <attr name="navigatePrevious" format="boolean" />

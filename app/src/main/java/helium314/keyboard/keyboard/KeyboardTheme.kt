@@ -47,7 +47,6 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
         const val STYLE_MATERIAL = "Material"
         const val STYLE_HOLO = "Holo"
         const val STYLE_ROUNDED = "Rounded"
-        const val STYLE_APPLE = "Apple"
 
         // new themes that are just colors
         const val THEME_LIGHT = "light"
@@ -56,8 +55,6 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
         const val THEME_DARKER = "darker"
         const val THEME_BLACK = "black"
         const val THEME_DYNAMIC = "dynamic"
-        const val THEME_IOS_LIGHT = "ios_light"
-        const val THEME_IOS_DARK = "ios_dark"
         const val THEME_BLUE_GRAY = "blue_gray"
         const val THEME_BROWN = "brown"
         const val THEME_CHOCOLATE = "chocolate"
@@ -70,7 +67,6 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
         const val THEME_VIOLETTE = "violette"
         fun getAvailableDefaultColors(prefs: SharedPreferences, isNight: Boolean) = listOfNotNull(
             if (!isNight) THEME_LIGHT else null, THEME_DARK,
-            if (!isNight) THEME_IOS_LIGHT else null, THEME_IOS_DARK,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) THEME_DYNAMIC else null,
             if (prefs.getString(Settings.PREF_THEME_STYLE, Defaults.PREF_THEME_STYLE) == STYLE_HOLO) THEME_HOLO_WHITE else null,
             THEME_DARKER,
@@ -86,7 +82,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
             if (!isNight) THEME_SAND else null,
             THEME_VIOLETTE
         )
-        val STYLES = arrayOf(STYLE_MATERIAL, STYLE_HOLO, STYLE_ROUNDED, STYLE_APPLE)
+        val STYLES = arrayOf(STYLE_MATERIAL, STYLE_HOLO, STYLE_ROUNDED)
 
         // These should be aligned with Keyboard.themeId and Keyboard.Case.keyboardTheme
         // attributes' values in attrs.xml.
@@ -95,8 +91,6 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
         private const val THEME_ID_LXX_BASE_BORDER = 2
         private const val THEME_ID_ROUNDED_BASE = 3
         private const val THEME_ID_ROUNDED_BASE_BORDER = 4
-        private const val THEME_ID_APPLE_BASE = 5
-        private const val THEME_ID_APPLE_BASE_BORDER = 6
         private const val DEFAULT_THEME_ID = THEME_ID_LXX_BASE
 
         private val KEYBOARD_THEMES = arrayOf(
@@ -104,9 +98,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
             KeyboardTheme(THEME_ID_LXX_BASE, R.style.KeyboardTheme_LXX_Base),
             KeyboardTheme(THEME_ID_LXX_BASE_BORDER, R.style.KeyboardTheme_LXX_Base_Border),
             KeyboardTheme(THEME_ID_ROUNDED_BASE, R.style.KeyboardTheme_Rounded_Base),
-            KeyboardTheme(THEME_ID_ROUNDED_BASE_BORDER, R.style.KeyboardTheme_Rounded_Base_Border),
-            KeyboardTheme(THEME_ID_APPLE_BASE, R.style.KeyboardTheme_Apple_Base),
-            KeyboardTheme(THEME_ID_APPLE_BASE_BORDER, R.style.KeyboardTheme_Apple_Base_Border)
+            KeyboardTheme(THEME_ID_ROUNDED_BASE_BORDER, R.style.KeyboardTheme_Rounded_Base_Border)
         )
 
         // named colors, with names from old settings
@@ -129,14 +121,13 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
             val matchingId = when (style) {
                 STYLE_HOLO -> THEME_ID_HOLO_BASE
                 STYLE_ROUNDED -> if (borders) THEME_ID_ROUNDED_BASE_BORDER else THEME_ID_ROUNDED_BASE
-                STYLE_APPLE -> if (borders) THEME_ID_APPLE_BASE_BORDER else THEME_ID_APPLE_BASE
                 else -> if (borders) THEME_ID_LXX_BASE_BORDER else THEME_ID_LXX_BASE
             }
             return KEYBOARD_THEMES.firstOrNull { it.themeId == matchingId } ?: KEYBOARD_THEMES[DEFAULT_THEME_ID]
         }
 
         fun getThemeActionAndEmojiKeyLabelFlags(themeId: Int): Int {
-            return if (themeId == THEME_ID_LXX_BASE || themeId == THEME_ID_ROUNDED_BASE || themeId == THEME_ID_APPLE_BASE) Key.LABEL_FLAGS_KEEP_BACKGROUND_ASPECT_RATIO else 0
+            return if (themeId == THEME_ID_LXX_BASE || themeId == THEME_ID_ROUNDED_BASE) Key.LABEL_FLAGS_KEEP_BACKGROUND_ASPECT_RATIO else 0
         }
 
         @JvmStatic
@@ -343,30 +334,6 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                     Color.rgb(150, 150, 216),
                     Color.WHITE,
                     Color.WHITE,
-                    keyboardBackground = backgroundImage
-                )
-                THEME_IOS_LIGHT -> DefaultColors(
-                    themeStyle,
-                    hasBorders,
-                    Color.rgb(0, 122, 255), // #007AFF iOS Blue accent
-                    Color.rgb(209, 211, 217), // #D1D3D9 iOS Light chassis background
-                    Color.WHITE, // #FFFFFF white letter keycaps
-                    Color.rgb(174, 179, 190), // #AEB3BE functional keycaps
-                    Color.WHITE, // #FFFFFF spacebar
-                    Color.BLACK, // key text
-                    Color.rgb(142, 142, 147), // #8E8E93 key hint text
-                    keyboardBackground = backgroundImage
-                )
-                THEME_IOS_DARK -> DefaultColors(
-                    themeStyle,
-                    hasBorders,
-                    Color.rgb(10, 132, 255), // #0A84FF iOS Dark Blue accent
-                    Color.rgb(28, 28, 30), // #1C1C1E iOS Dark chassis background
-                    Color.rgb(99, 99, 102), // #636366 keycaps
-                    Color.rgb(58, 58, 60), // #3A3A3C functional keycaps
-                    Color.rgb(99, 99, 102), // #636366 spacebar
-                    Color.WHITE, // key text
-                    Color.rgb(174, 174, 178), // #AEAEB2 key hint text
                     keyboardBackground = backgroundImage
                 )
                 else -> { // user-defined theme
