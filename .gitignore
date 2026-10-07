@@ -15,3 +15,5 @@ tools/*.txt
 *.patch
 *.diff
 *.sh
+build_artifacts/
+.codegraph/
