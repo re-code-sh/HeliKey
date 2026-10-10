@@ -11,7 +11,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import helium314.keyboard.keyboard.KeyboardLayoutSet
 import helium314.keyboard.keyboard.KeyboardSwitcher
-import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import helium314.keyboard.latin.AudioAndHapticFeedbackManager
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.database.ClipboardDao
@@ -76,11 +75,6 @@ fun PreferencesScreen(
         Settings.PREF_LANGUAGE_SWITCH_KEY,
         Settings.PREF_SHOW_EMOJI_KEY,
         Settings.PREF_SHOW_DPAD_KEY,
-        if (SubtypeSettings.getEnabledSubtypes(true).any { LocaleKeyboardInfos.hasZwnjKey(it.locale()) })
-            Settings.PREF_REMOVE_ZWNJ_KEY else null,
-        if (SubtypeSettings.getEnabledSubtypes(true).any { LocaleKeyboardInfos.hasZwnjKey(it.locale()) }
-            && !prefs.getBoolean(Settings.PREF_REMOVE_ZWNJ_KEY, Defaults.PREF_REMOVE_ZWNJ_KEY))
-            Settings.PREF_DOUBLE_SPACE_ZWNJ else null,
         Settings.PREF_COMMA_KEY_SHORT_HOLD,
         Settings.PREF_REMOVE_REDUNDANT_POPUPS,
         R.string.settings_category_clipboard_history,
@@ -169,12 +163,6 @@ fun createPreferencesSettings(context: Context) = listOf(
     },
     Setting(context, Settings.PREF_SHOW_DPAD_KEY, R.string.show_dpad_key) {
         SwitchPreference(it, Defaults.PREF_SHOW_DPAD_KEY) { KeyboardSwitcher.getInstance().reloadKeyboard() }
-    },
-    Setting(context, Settings.PREF_REMOVE_ZWNJ_KEY, R.string.remove_zwnj_key, R.string.remove_zwnj_key_summary) {
-        SwitchPreference(it, Defaults.PREF_REMOVE_ZWNJ_KEY) { KeyboardSwitcher.getInstance().reloadKeyboard() }
-    },
-    Setting(context, Settings.PREF_DOUBLE_SPACE_ZWNJ, R.string.double_space_zwnj, R.string.double_space_zwnj_summary) {
-        SwitchPreference(it, Defaults.PREF_DOUBLE_SPACE_ZWNJ)
     },
     Setting(context, Settings.PREF_COMMA_KEY_SHORT_HOLD, R.string.comma_key_short_hold, R.string.comma_key_short_hold_summary) {
         SwitchPreference(it, Defaults.PREF_COMMA_KEY_SHORT_HOLD)

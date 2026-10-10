@@ -1634,11 +1634,6 @@ public final class InputLogic {
         return true;
     }
 
-    private static boolean canBeFollowedByDoubleSpaceZwnj(final int codePoint) {
-        return Character.isLetterOrDigit(codePoint)
-                || Character.getType(codePoint) == Character.NON_SPACING_MARK
-                || Character.getType(codePoint) == Character.COMBINING_SPACING_MARK;
-    }
 
     /**
      * Apply the double-space-to-period transformation if applicable.
