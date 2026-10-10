@@ -146,6 +146,8 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_USE_CONTACTS = "use_contacts";
     public static final String PREF_USE_APPS = "use_apps";
     public static final String PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = "long_press_symbols_for_numpad";
+    public static final String PREF_REMEMBER_NUMPAD_IN_SYMBOLS = "remember_numpad_in_symbols";
+    public static final String PREF_LAST_SYMBOL_MODE = "last_symbol_mode";
 
     public static final String PREF_ONE_HANDED_MODE_PREFIX = "one_handed_mode_enabled";
     public static final String PREF_ONE_HANDED_GRAVITY_PREFIX = "one_handed_mode_gravity";
@@ -601,6 +603,16 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
 
     private boolean isSubtypePerApp() {
         return mPrefs.getBoolean(PREF_SAVE_SUBTYPE_PER_APP, Defaults.PREF_SAVE_SUBTYPE_PER_APP);
+    }
+
+    public String readLastSymbolMode() {
+        if (mPrefs == null) return null;
+        return mPrefs.getString(PREF_LAST_SYMBOL_MODE, null);
+    }
+
+    public void writeLastSymbolMode(final String mode) {
+        if (mPrefs == null) return;
+        mPrefs.edit().putString(PREF_LAST_SYMBOL_MODE, mode).apply();
     }
 
     public static PunctuationSuggestions readPunctuationSuggestions(Context context) {
