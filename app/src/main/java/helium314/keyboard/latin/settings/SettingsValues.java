@@ -81,6 +81,8 @@ public class SettingsValues {
     public final boolean mShowsEmojiKey;
     public final boolean mShowsDpadKey;
     public final boolean mVarToolbarDirection;
+    public final boolean mFixedToolbarDirectionLtr;
+    public final boolean mCommaKeyShortHold;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
     public final boolean mBlockPotentiallyOffensive;
@@ -160,7 +162,6 @@ public class SettingsValues {
     public final boolean mSuggestClipboardContent;
     public final boolean mIncognitoModeEnabled;
     public final boolean mLongPressSymbolsForNumpad;
-    public final boolean mRememberNumpadInSymbols;
 
     // From the input box
     @NonNull
@@ -213,7 +214,7 @@ public class SettingsValues {
         mShowsNumberRowInSymbols = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW_IN_SYMBOLS, Defaults.PREF_SHOW_NUMBER_ROW_IN_SYMBOLS);
         mLocalizedNumberRow = SubtypeUtilsKt.getHasLocalizedNumberRow(selectedSubtype, prefs);
         mRemoveZwnjKey = SubtypeUtilsKt.getRemoveZwnjKey(selectedSubtype, prefs);
-        mDoubleSpaceZwnj = mRemoveZwnjKey
+        mDoubleSpaceZwnj = !mRemoveZwnjKey
                 && SubtypeUtilsKt.getDoubleSpaceZwnj(selectedSubtype, prefs)
                 && inputAttributes.mIsGeneralTextInput;
         mShowNumberRowHints = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW_HINTS, Defaults.PREF_SHOW_NUMBER_ROW_HINTS);
@@ -224,6 +225,8 @@ public class SettingsValues {
         mShowsEmojiKey = prefs.getBoolean(Settings.PREF_SHOW_EMOJI_KEY, Defaults.PREF_SHOW_EMOJI_KEY);
         mShowsDpadKey = prefs.getBoolean(Settings.PREF_SHOW_DPAD_KEY, Defaults.PREF_SHOW_DPAD_KEY);
         mVarToolbarDirection = mToolbarMode != ToolbarMode.HIDDEN && prefs.getBoolean(Settings.PREF_VARIABLE_TOOLBAR_DIRECTION, Defaults.PREF_VARIABLE_TOOLBAR_DIRECTION);
+        mFixedToolbarDirectionLtr = prefs.getBoolean(Settings.PREF_FIXED_TOOLBAR_DIRECTION_LTR, Defaults.PREF_FIXED_TOOLBAR_DIRECTION_LTR);
+        mCommaKeyShortHold = prefs.getBoolean(Settings.PREF_COMMA_KEY_SHORT_HOLD, Defaults.PREF_COMMA_KEY_SHORT_HOLD);
         mUsePersonalizedDicts = prefs.getBoolean(Settings.PREF_KEY_USE_PERSONALIZED_DICTS, Defaults.PREF_KEY_USE_PERSONALIZED_DICTS);
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, Defaults.PREF_KEY_USE_DOUBLE_SPACE_PERIOD)
                 && inputAttributes.mIsGeneralTextInput;
@@ -331,7 +334,6 @@ public class SettingsValues {
         mBottomPaddingScale = mIsFloatingKeyboard ? 0f : Settings.readBottomPaddingScale(prefs, isLandscape, isFolded);
         mSidePaddingScale = Settings.readSidePaddingScale(prefs, isLandscape, mIsSplitKeyboardEnabled, isFolded);
         mLongPressSymbolsForNumpad = prefs.getBoolean(Settings.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD, Defaults.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD);
-        mRememberNumpadInSymbols = prefs.getBoolean(Settings.PREF_REMEMBER_NUMPAD_IN_SYMBOLS, Defaults.PREF_REMEMBER_NUMPAD_IN_SYMBOLS);
         mAutoShowToolbar = mToolbarMode == ToolbarMode.EXPANDABLE && prefs.getBoolean(Settings.PREF_AUTO_SHOW_TOOLBAR, Defaults.PREF_AUTO_SHOW_TOOLBAR);
         mAutoHideToolbar = mSuggestionsEnabled && prefs.getBoolean(Settings.PREF_AUTO_HIDE_TOOLBAR, Defaults.PREF_AUTO_HIDE_TOOLBAR);
         mAlphaAfterEmojiInEmojiView = prefs.getBoolean(Settings.PREF_ABC_AFTER_EMOJI, Defaults.PREF_ABC_AFTER_EMOJI);

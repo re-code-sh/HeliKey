@@ -1318,8 +1318,24 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         }
 
         final int code = key.getCode();
+        final long pressDuration = Math.max(0, Math.max(eventTime - mDownTime, SystemClock.elapsedRealtime() - mStartTime));
+        if (Settings.getValues().mCommaKeyShortHold && isCommaKey(key) && pressDuration < 50) {
+            callListenerOnRelease(key, code, false);
+            return;
+        }
+
         callListenerOnCodeInput(key, code, x, y, eventTime, false);
         callListenerOnRelease(key, code, false);
+    }
+
+    private static boolean isCommaKey(final Key key) {
+        if (key == null) return false;
+        final int code = key.getCode();
+        if (code == Constants.CODE_COMMA || code == 0x060C) {
+            return true;
+        }
+        final String label = key.getLabel();
+        return label != null && (label.equals(",") || label.equals("،"));
     }
 
     private void startRepeatKey(final Key key) {

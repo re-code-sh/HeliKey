@@ -137,10 +137,8 @@ class EmojiSearchActivity : ComponentActivity() {
 
     @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        overridePendingTransition(0, 0)
         super.onCreate(savedInstanceState)
         init()
-        search(searchText)
         enableEdgeToEdge()
         setContent {
             LocalContext.current.setTheme(KeyboardTheme.getKeyboardTheme(this).mStyleId)
@@ -255,15 +253,8 @@ class EmojiSearchActivity : ComponentActivity() {
 
     override fun onEnterAnimationComplete() {
         Log.d(TAG, "onEnterAnimationComplete")
-        if (!firstSearchDone) {
-            search(searchText)
-        }
+        search(searchText)
         Log.d(TAG, "initial search done")
-    }
-
-    override fun finish() {
-        super.finish()
-        overridePendingTransition(0, 0)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

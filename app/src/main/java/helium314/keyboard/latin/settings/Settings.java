@@ -95,6 +95,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_SHOW_EMOJI_KEY = "show_emoji_key";
     public static final String PREF_SHOW_DPAD_KEY = "show_dpad_key";
    public static final String PREF_VARIABLE_TOOLBAR_DIRECTION = "var_toolbar_direction";
+    public static final String PREF_FIXED_TOOLBAR_DIRECTION_LTR = "fixed_toolbar_direction_ltr";
     public static final String PREF_ADDITIONAL_SUBTYPES = "additional_subtypes";
     public static final String PREF_ENABLE_SPLIT_KEYBOARD = "split_keyboard";
     public static final String PREF_ENABLE_SPLIT_KEYBOARD_LANDSCAPE = "split_keyboard_landscape";
@@ -146,8 +147,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_USE_CONTACTS = "use_contacts";
     public static final String PREF_USE_APPS = "use_apps";
     public static final String PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = "long_press_symbols_for_numpad";
-    public static final String PREF_REMEMBER_NUMPAD_IN_SYMBOLS = "remember_numpad_in_symbols";
-    public static final String PREF_LAST_SYMBOL_MODE = "last_symbol_mode";
 
     public static final String PREF_ONE_HANDED_MODE_PREFIX = "one_handed_mode_enabled";
     public static final String PREF_ONE_HANDED_GRAVITY_PREFIX = "one_handed_mode_gravity";
@@ -158,6 +157,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_LOCALIZED_NUMBER_ROW = "localized_number_row";
     public static final String PREF_REMOVE_ZWNJ_KEY = "remove_zwnj_key";
     public static final String PREF_DOUBLE_SPACE_ZWNJ = "double_space_zwnj";
+    public static final String PREF_COMMA_KEY_SHORT_HOLD = "comma_key_short_hold";
     public static final String PREF_SHOW_NUMBER_ROW_HINTS = "show_number_row_hints";
     public static final String PREF_CUSTOM_CURRENCY_KEY = "custom_currency_key";
 
@@ -603,16 +603,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
 
     private boolean isSubtypePerApp() {
         return mPrefs.getBoolean(PREF_SAVE_SUBTYPE_PER_APP, Defaults.PREF_SAVE_SUBTYPE_PER_APP);
-    }
-
-    public String readLastSymbolMode() {
-        if (mPrefs == null) return null;
-        return mPrefs.getString(PREF_LAST_SYMBOL_MODE, null);
-    }
-
-    public void writeLastSymbolMode(final String mode) {
-        if (mPrefs == null) return;
-        mPrefs.edit().putString(PREF_LAST_SYMBOL_MODE, mode).apply();
     }
 
     public static PunctuationSuggestions readPunctuationSuggestions(Context context) {

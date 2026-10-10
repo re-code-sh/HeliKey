@@ -311,8 +311,12 @@
     <string name="zwnj_key_title">Half-space key</string>
     <string name="remove_zwnj_key">Remove half-space key</string>
     <string name="remove_zwnj_key_summary">Remove the half-space (ZWNJ) key next to the space bar</string>
-    <string name="double_space_zwnj">Double-tap space for half-space</string>
-    <string name="double_space_zwnj_summary">Insert half-space (ZWNJ) when double-tapping space</string>
+    <string name="double_space_zwnj">Double-tap for half-space</string>
+    <string name="double_space_zwnj_summary">Single tap inserts space, double tap inserts half-space</string>
+    <string name="comma_key_short_hold">Short hold for comma key</string>
+    <string name="comma_key_short_hold_summary">Require a short hold (50 ms) to type comma to prevent accidental touches</string>
+    <string name="fixed_toolbar_direction_ltr">Fixed toolbar direction</string>
+    <string name="fixed_toolbar_direction_ltr_summary">Always keep toolbar from left to right (LTR) regardless of language</string>
     <!-- Title of the setting to enable number row hints -->
     <string name="number_row_hints">Show hints on number row</string>
     <!-- Title of the setting to save subtype per app -->
@@ -404,8 +408,6 @@
     <string name="prefs_long_press_keyboard_to_change_lang_summary">Long pressing space key will prompt input method selection menu</string>
     <!-- Title of the setting enabling long press on symbols key to switch to numpad -->
     <string name="prefs_long_press_symbol_for_numpad">Long press symbols key for numpad</string>
-    <string name="remember_numpad_in_symbols">Remember number pad in symbols</string>
-    <string name="remember_numpad_in_symbols_summary">Open number pad from the symbols key if it was used last</string>
     <!-- Title of the setting for reduced distance between keys, todo: not used any more -->
     <string name="prefs_narrow_key_gaps">Narrow key gaps</string>
     <!-- Title of the setting for setting distance between keys -->
