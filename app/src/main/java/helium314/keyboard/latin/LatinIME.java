@@ -150,6 +150,7 @@ public class LatinIME extends InputMethodService implements
     // Working variable for {@link #startShowingInputView()} and
     // {@link #onEvaluateInputViewShown()}.
     private boolean mIsExecutingStartShowingInputView;
+    private boolean mIsReturningFromEmojiSearch;
 
     // Used for re-initialize keyboard layout after onConfigurationChange.
     @Nullable
@@ -978,7 +979,10 @@ public class LatinIME extends InputMethodService implements
             needToCallLoadKeyboardLater = false;
         }
 
-        if (isDifferentTextField) {
+        if (mIsReturningFromEmojiSearch && !isEmojiSearch()) {
+            mIsReturningFromEmojiSearch = false;
+            switcher.setEmojiKeyboard();
+        } else if (isDifferentTextField) {
             mainKeyboardView.closing();
             suggest.setAutoCorrectionThreshold(currentSettingsValues.mAutoCorrectionThreshold);
             switcher.reloadMainKeyboard();
@@ -1751,18 +1755,24 @@ public class LatinIME extends InputMethodService implements
 
     public void launchEmojiSearch() {
         Log.d(EmojiSearchActivityKt.TAG, "before activity launch");
-        startActivity(new Intent().setClass(this, EmojiSearchActivity.class)
-                          .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_MULTIPLE_TASK));
+        mIsReturningFromEmojiSearch = true;
+        mKeyboardSwitcher.resetKeyboardStateToAlphabet();
+        final Intent intent = new Intent(this, EmojiSearchActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+                | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
     }
 
     private void onEmojiSearchDone(Intent intent) {
         Log.d(EmojiSearchActivityKt.TAG, "after activity closing. isEmojiSearch: " + isEmojiSearch() + ". Intent: " + intent +
                 (intent != null ? ". imeClosed: " + isImeClosed(intent) + ". selected emoji: " + getSelectedEmoji(intent) : ""));
-        if (intent != null && EmojiSearchActivity.EMOJI_SEARCH_DONE_ACTION.equals(intent.getAction()) && ! isEmojiSearch()) {
+        mIsReturningFromEmojiSearch = false;
+        if (intent != null && EmojiSearchActivity.EMOJI_SEARCH_DONE_ACTION.equals(intent.getAction()) && !isEmojiSearch()) {
             if (isImeClosed(intent)) {
                 requestHideSelf(0);
             } else {
-                mHandler.postDelayed(mKeyboardSwitcher::setEmojiKeyboard, 100);
+                mKeyboardSwitcher.setEmojiKeyboard();
                 if (intent.hasExtra(EmojiSearchActivity.EMOJI_KEY)) {
                      onTextInput(intent.getStringExtra(EmojiSearchActivity.EMOJI_KEY));
                 }

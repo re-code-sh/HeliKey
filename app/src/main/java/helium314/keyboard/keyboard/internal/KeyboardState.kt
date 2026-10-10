@@ -62,6 +62,24 @@ class KeyboardState(private val switchActions: SwitchActions) {
     private var isInLayoutSlide = false
 
     private var mode = Mode.ALPHABET
+    private var isTemporaryNumpad = false
+    private var lastSymbolMode: Mode = try {
+        val saved = Settings.getInstance().readLastSymbolMode()
+        if (saved == Mode.NUMPAD.name) Mode.NUMPAD else Mode.SYMBOLS
+    } catch (_: Exception) {
+        Mode.SYMBOLS
+    }
+
+    private fun updateLastSymbolMode(newMode: Mode) {
+        if (newMode == lastSymbolMode) return
+        lastSymbolMode = newMode
+        try {
+            if (Settings.getValues().mRememberNumpadInSymbols) {
+                Settings.getInstance().writeLastSymbolMode(newMode.name)
+            }
+        } catch (_: Exception) {
+        }
+    }
     private val prevLayouts = WeakStack(Mode.entries)
     private var isInSpaceToAlpha = false
     private var recapitalizeMode: RecapitalizeMode? = null
@@ -174,6 +192,13 @@ class KeyboardState(private val switchActions: SwitchActions) {
             Utility.DPAD -> switchActions.setDpadKeyboard()
         }
         mode = layout.mode()
+        if (!isInLayoutSlide && !isInShiftSlide && !isTemporaryNumpad) {
+            if (mode == Mode.NUMPAD) {
+                updateLastSymbolMode(Mode.NUMPAD)
+            } else if (mode == Mode.SYMBOLS || mode == Mode.SYMBOLS_SHIFTED) {
+                updateLastSymbolMode(Mode.SYMBOLS)
+            }
+        }
         if (layout is Alphabet) shiftMode = layout.shiftMode
         recapitalizeMode = null
         isInSpaceToAlpha = false
@@ -185,6 +210,7 @@ class KeyboardState(private val switchActions: SwitchActions) {
     fun onLongPressAlphaSymbolForNumpad() {
         // We want sliding input to return to the original layout, so
         // don't remember the layout shown momentarily when holding
+        isTemporaryNumpad = true
         loadLayout(Utility.NUMPAD)
     }
 
@@ -192,10 +218,23 @@ class KeyboardState(private val switchActions: SwitchActions) {
         if (DebugFlags.DEBUG_ENABLED) {
             Log.d(TAG, "toggleLayout(layout=$layout, autoCapsFlags=${CapsModeUtils.flagsToString(autoCapsFlags)}, recapitalizeMode=$recapitalizeMode)")
         }
-        if (mode == layout.mode()) {
+        val targetLayout = if (layout == Utility.SYMBOLS && mode == Mode.ALPHABET
+            && Settings.getValues().mRememberNumpadInSymbols && lastSymbolMode == Mode.NUMPAD) {
+            Utility.NUMPAD
+        } else {
+            layout
+        }
+        if (mode == targetLayout.mode()) {
             loadPreviousLayout(autoCapsFlags, recapitalizeMode)
         } else {
-            setLayout(layout)
+            // If switching between sibling symbol modes (NUMPAD <-> SYMBOLS),
+            // load directly to prevent prevLayouts stack pollution
+            if ((mode == Mode.NUMPAD && (targetLayout == Utility.SYMBOLS || targetLayout == Utility.SYMBOLS_SHIFTED))
+                || ((mode == Mode.SYMBOLS || mode == Mode.SYMBOLS_SHIFTED) && targetLayout == Utility.NUMPAD)) {
+                loadLayout(targetLayout)
+            } else {
+                setLayout(targetLayout)
+            }
         }
         if (isInLayoutSlide) {
             prevLayouts.pop()
@@ -266,7 +305,14 @@ class KeyboardState(private val switchActions: SwitchActions) {
             }
             // if no sliding, switching is instead handled by onEvent()
             // to accommodate toolbar keys and prevent double-loads.
-            KeyCode.SYMBOL       -> if (withSliding) slideInto(Utility.SYMBOLS)
+            KeyCode.SYMBOL       -> if (withSliding) {
+                val target = if (mode == Mode.ALPHABET && Settings.getValues().mRememberNumpadInSymbols && lastSymbolMode == Mode.NUMPAD) {
+                    Utility.NUMPAD
+                } else {
+                    Utility.SYMBOLS
+                }
+                slideInto(target)
+            }
             KeyCode.ALPHA        -> if (withSliding) slideInto(Alphabet(shiftMode, autoCapsFlags, recapitalizeMode))
             KeyCode.NUMPAD       -> if (withSliding) slideInto(Utility.NUMPAD)
             KeyCode.DPAD         -> if (withSliding) slideInto(Utility.DPAD)
@@ -274,13 +320,18 @@ class KeyboardState(private val switchActions: SwitchActions) {
     }
 
     private fun onPressAlphaSymbol(autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?) {
-        setLayout(
-            if (mode == Mode.ALPHABET) {
-                Utility.SYMBOLS
+        val target = if (mode == Mode.ALPHABET) {
+            if (Settings.getValues().mRememberNumpadInSymbols && lastSymbolMode == Mode.NUMPAD) {
+                Utility.NUMPAD
             } else {
-                Alphabet(shiftMode, autoCapsFlags, recapitalizeMode)
+                Utility.SYMBOLS
             }
-        )
+        } else if (mode == Mode.NUMPAD) {
+            Utility.SYMBOLS
+        } else {
+            Alphabet(shiftMode, autoCapsFlags, recapitalizeMode)
+        }
+        setLayout(target)
         symbolKeyState = ModifierKeyState.PRESSING
     }
 
@@ -438,6 +489,7 @@ class KeyboardState(private val switchActions: SwitchActions) {
         if (DEBUG_EVENT) {
             Log.d(TAG, "onFinishSlidingInput: " + stateToString(autoCapsFlags, recapitalizeMode))
         }
+        isTemporaryNumpad = false
         if (isInShiftSlide) {
             isInShiftSlide = false
             restorePreviousShiftMode()

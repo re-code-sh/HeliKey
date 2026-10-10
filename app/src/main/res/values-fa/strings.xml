@@ -267,6 +267,8 @@
     <string name="remove_redundant_popups">حذف بازشوهای تکراری</string>
     <string name="remove_redundant_popups_summary">پنهان کردن کلیدهای بازشویی که از قبل در چیدمان اصلی وجود دارند</string>
     <string name="prefs_long_press_symbol_for_numpad">لمس طولانی کلید نمادها برای صفحه اعداد</string>
+    <string name="remember_numpad_in_symbols">به‌خاطر سپردن صفحه‌کلید عددی در نمادها</string>
+    <string name="remember_numpad_in_symbols_summary">در صورت استفاده قبلی از صفحه‌کلید عددی، باز کردن مستقیم آن با زدن دکمه نمادها</string>
     <string name="prefs_narrow_key_gaps">کاهش فاصله بین کلیدها</string>
     <string name="prefs_key_gap_scale">میزان فاصله بین کلیدها</string>
     <string name="prefs_bottom_padding_scale">حاشیه پایین</string>
