@@ -515,7 +515,8 @@ public final class InputLogic {
         }
 
         // TODO: Consolidate the double-space period timer, mLastKeyTime, and the space state.
-        if (processedEvent.getCodePoint() != Constants.CODE_SPACE) {
+        if (processedEvent.getCodePoint() != Constants.CODE_SPACE
+                && (!settingsValues.mDoubleSpaceZwnj || processedEvent.getCodePoint() != Constants.CODE_ZWNJ)) {
             cancelDoubleSpacePeriodCountdown();
         }
 
@@ -976,8 +977,22 @@ public final class InputLogic {
             final InputTransaction inputTransaction,
             final LatinIME.UIHandler handler) {
         final int codePoint = event.getCodePoint();
-        mSpaceState = SpaceState.NONE;
         final SettingsValues sv = inputTransaction.getSettingsValues();
+        if (sv.mDoubleSpaceZwnj && codePoint == Constants.CODE_ZWNJ) {
+            if (tryPerformDoubleSpaceZwnj(event, inputTransaction)) {
+                mSpaceState = SpaceState.DOUBLE_ZWNJ;
+                inputTransaction.setRequiresUpdateSuggestions();
+                return;
+            } else {
+                mSpaceState = SpaceState.NONE;
+                final Event spaceEvent = Event.createSoftwareKeypressEvent(
+                        Constants.CODE_SPACE, event.getKeyCode(), event.getX(), event.getY(), event.isKeyRepeat());
+                handleSeparatorEvent(spaceEvent, inputTransaction, handler);
+                startDoubleSpacePeriodCountdown(inputTransaction);
+                return;
+            }
+        }
+        mSpaceState = SpaceState.NONE;
 
         // wrap / unwrap selected text in codepoint pairs
         if (!mWordComposer.isComposingWord() && mConnection.hasSelection()) { // we should never be composing when something is selected
@@ -1359,7 +1374,13 @@ public final class InputLogic {
                 // reverting any autocorrect at this point. So we can safely return.
                 return;
             }
-            if (SpaceState.DOUBLE == inputTransaction.getSpaceState()) {
+            if (SpaceState.DOUBLE_ZWNJ == inputTransaction.getSpaceState()) {
+                cancelDoubleSpacePeriodCountdown();
+                if (mConnection.revertDoubleSpaceZwnj()) {
+                    inputTransaction.setRequiresUpdateSuggestions();
+                    return;
+                }
+            } else if (SpaceState.DOUBLE == inputTransaction.getSpaceState()) {
                 cancelDoubleSpacePeriodCountdown();
                 if (mConnection.revertDoubleSpacePeriod(inputTransaction.getSettingsValues().mSpacingAndPunctuations)) {
                     // No need to reset mSpaceState, it has already be done (that's why we
@@ -1590,6 +1611,29 @@ public final class InputLogic {
         return inputTransaction.getTimestamp() - mDoubleSpacePeriodCountdownStart
                 < inputTransaction.getSettingsValues().mDoubleSpacePeriodTimeout;
     }
+
+    private boolean tryPerformDoubleSpaceZwnj(final Event event,
+            final InputTransaction inputTransaction) {
+        if (!inputTransaction.getSettingsValues().mDoubleSpaceZwnj
+                || Constants.CODE_ZWNJ != event.getCodePoint()
+                || !isDoubleSpacePeriodCountdownActive(inputTransaction)) {
+            return false;
+        }
+        final CharSequence lastTwo = mConnection.getTextBeforeCursor(2, 0);
+        if (null == lastTwo) return false;
+        final int length = lastTwo.length();
+        if (length < 1) return false;
+        if (lastTwo.charAt(length - 1) != Constants.CODE_SPACE) {
+            return false;
+        }
+        cancelDoubleSpacePeriodCountdown();
+        mConnection.deleteTextBeforeCursor(1);
+        mConnection.commitText(Constants.STRING_ZWNJ, 1);
+        inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
+        inputTransaction.setRequiresUpdateSuggestions();
+        return true;
+    }
+
 
     /**
      * Apply the double-space-to-period transformation if applicable.

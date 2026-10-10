@@ -35,10 +35,7 @@ class LocaleKeyboardInfos(dataStream: InputStream?, locale: Locale) {
     val currencyKey = getCurrencyKey(locale)
     var localizedNumberKeys: List<String>? = null
         private set
-    val hasZwnjKey = when (locale.language) { // todo: move to the info file
-        "fa", "ne", "kn", "te" -> true
-        else -> false
-    }
+    val hasZwnjKey = hasZwnjKey(locale)
     val labelFlags = when (locale.language) { // todo: move to the info file
         "hy", "ar", "be", "fa", "hi", "lo", "mr", "ne", "th", "ur" -> Key.LABEL_FLAGS_FONT_NORMAL
         "km", "ml", "si", "ta", "te" -> Key.LABEL_FLAGS_FONT_NORMAL or Key.LABEL_FLAGS_AUTO_X_SCALE
@@ -200,6 +197,11 @@ class LocaleKeyboardInfos(dataStream: InputStream?, locale: Locale) {
             params.mLocaleKeyboardInfos = localeKeyboardInfosCache.getOrPut(locales.joinToString { it.toString() } + Settings.getValues().mShowMorePopupKeys) {
                 createLocaleKeyTexts(context, params, popupKeysSetting)
             }
+        }
+
+        fun hasZwnjKey(locale: Locale) = when (locale.language) {
+            "fa", "ne", "kn", "te" -> true
+            else -> false
         }
 
         fun hasLocalizedNumberRow(locale: Locale, context: Context) =

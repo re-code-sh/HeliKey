@@ -71,6 +71,8 @@ public class SettingsValues {
     public final boolean mShowsNumberRow;
     public final boolean mShowsNumberRowInSymbols;
     public final boolean mLocalizedNumberRow;
+    public final boolean mRemoveZwnjKey;
+    public final boolean mDoubleSpaceZwnj;
     public final boolean mShowNumberRowHints;
     public final boolean mShowsHints;
     public final boolean mShowsPopupHints;
@@ -79,6 +81,8 @@ public class SettingsValues {
     public final boolean mShowsEmojiKey;
     public final boolean mShowsDpadKey;
     public final boolean mVarToolbarDirection;
+    public final boolean mFixedToolbarDirectionLtr;
+    public final boolean mCommaKeyShortHold;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
     public final boolean mBlockPotentiallyOffensive;
@@ -208,6 +212,10 @@ public class SettingsValues {
         mShowsNumberRow = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW, Defaults.PREF_SHOW_NUMBER_ROW);
         mShowsNumberRowInSymbols = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW_IN_SYMBOLS, Defaults.PREF_SHOW_NUMBER_ROW_IN_SYMBOLS);
         mLocalizedNumberRow = SubtypeUtilsKt.getHasLocalizedNumberRow(selectedSubtype, prefs);
+        mRemoveZwnjKey = SubtypeUtilsKt.getRemoveZwnjKey(selectedSubtype, prefs);
+        mDoubleSpaceZwnj = !mRemoveZwnjKey
+                && SubtypeUtilsKt.getDoubleSpaceZwnj(selectedSubtype, prefs)
+                && inputAttributes.mIsGeneralTextInput;
         mShowNumberRowHints = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW_HINTS, Defaults.PREF_SHOW_NUMBER_ROW_HINTS);
         mShowsHints = prefs.getBoolean(Settings.PREF_SHOW_HINTS, Defaults.PREF_SHOW_HINTS);
         mShowsPopupHints = prefs.getBoolean(Settings.PREF_SHOW_POPUP_HINTS, Defaults.PREF_SHOW_POPUP_HINTS);
@@ -216,6 +224,8 @@ public class SettingsValues {
         mShowsEmojiKey = prefs.getBoolean(Settings.PREF_SHOW_EMOJI_KEY, Defaults.PREF_SHOW_EMOJI_KEY);
         mShowsDpadKey = prefs.getBoolean(Settings.PREF_SHOW_DPAD_KEY, Defaults.PREF_SHOW_DPAD_KEY);
         mVarToolbarDirection = mToolbarMode != ToolbarMode.HIDDEN && prefs.getBoolean(Settings.PREF_VARIABLE_TOOLBAR_DIRECTION, Defaults.PREF_VARIABLE_TOOLBAR_DIRECTION);
+        mFixedToolbarDirectionLtr = prefs.getBoolean(Settings.PREF_FIXED_TOOLBAR_DIRECTION_LTR, Defaults.PREF_FIXED_TOOLBAR_DIRECTION_LTR);
+        mCommaKeyShortHold = prefs.getBoolean(Settings.PREF_COMMA_KEY_SHORT_HOLD, Defaults.PREF_COMMA_KEY_SHORT_HOLD);
         mUsePersonalizedDicts = prefs.getBoolean(Settings.PREF_KEY_USE_PERSONALIZED_DICTS, Defaults.PREF_KEY_USE_PERSONALIZED_DICTS);
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, Defaults.PREF_KEY_USE_DOUBLE_SPACE_PERIOD)
                 && inputAttributes.mIsGeneralTextInput;

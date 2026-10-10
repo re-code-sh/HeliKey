@@ -95,6 +95,12 @@ public final class Constants {
             /** Overrides the general "localized number row" setting */
             public static final String LOCALIZED_NUMBER_ROW = "LocalizedNumberRow";
 
+            /** Overrides the "remove ZWNJ key" setting */
+            public static final String REMOVE_ZWNJ_KEY = "RemoveZwnjKey";
+
+            /** Overrides the "double space ZWNJ" setting */
+            public static final String DOUBLE_SPACE_ZWNJ = "DoubleSpaceZwnj";
+
             private ExtraValue() {
                 // This utility class is not publicly instantiable.
             }
@@ -170,6 +176,8 @@ public final class Constants {
     public static final int CODE_ENTER = '\n';
     public static final int CODE_TAB = '\t';
     public static final int CODE_SPACE = ' ';
+    public static final int CODE_ZWNJ = 0x200C;
+    public static final String STRING_ZWNJ = "\u200C";
     public static final int CODE_PERIOD = '.';
     public static final int CODE_COMMA = ',';
     public static final int CODE_DASH = '-';
