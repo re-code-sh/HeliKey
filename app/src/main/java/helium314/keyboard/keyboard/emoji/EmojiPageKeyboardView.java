@@ -80,6 +80,10 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
     private Key mCurrentKey;
     private Runnable mPendingKeyDown;
     private Runnable mPendingLongPress;
+    private Runnable mPendingDoubleLongPress;
+    private Runnable mEmojiRepeatRunnable;
+    private boolean mIsRepeatingEmoji = false;
+    private int mEmojiRepeatCount = 0;
     private final Handler mHandler;
 
     // More keys keyboard
@@ -356,9 +360,65 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
         mHandler.postDelayed(mPendingKeyDown, KEY_PRESS_DELAY_TIME);
     }
 
+    private boolean hasPopupMenu(@NonNull final Key key) {
+        final Keyboard keyboard = getKeyboard();
+        if (keyboard instanceof DynamicGridKeyboard && ((DynamicGridKeyboard) keyboard).isRecents()) {
+            return true;
+        }
+        final PopupKeySpec[] popupKeys = key.getPopupKeys();
+        return popupKeys != null && popupKeys.length > 0;
+    }
+
+    private void stopEmojiRepeat() {
+        if (mEmojiRepeatRunnable != null) {
+            mHandler.removeCallbacks(mEmojiRepeatRunnable);
+            mEmojiRepeatRunnable = null;
+        }
+    }
+
     private void registerLongPress(final Key key) {
-        mPendingLongPress = () -> onLongPressed(key);
-        mHandler.postDelayed(mPendingLongPress, getLongPressTimeout());
+        cancelLongPress();
+        if (Settings.getValues().mHoldForEmoji) {
+            final int timeout = getLongPressTimeout();
+            final int repeatInterval = getResources().getInteger(R.integer.config_key_repeat_interval);
+            mEmojiRepeatRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (mCurrentKey != key) return;
+                    mIsRepeatingEmoji = true;
+                    mEmojiRepeatCount++;
+                    mEmojiViewCallback.onRepeatKey(key);
+                    mHandler.postDelayed(this, repeatInterval);
+                }
+            };
+            mPendingLongPress = () -> {
+                if (mCurrentKey != key) return;
+                if (mPendingKeyDown != null) {
+                    mHandler.removeCallbacks(mPendingKeyDown);
+                    mPendingKeyDown = null;
+                    callListenerOnPressKey(key);
+                }
+                mEmojiRepeatRunnable.run();
+            };
+            mHandler.postDelayed(mPendingLongPress, timeout);
+
+            if (hasPopupMenu(key)) {
+                mPendingDoubleLongPress = () -> {
+                    if (mCurrentKey != key) return;
+                    stopEmojiRepeat();
+                    if (mEmojiRepeatCount > 0) {
+                        mEmojiViewCallback.onDeleteRepeatedKeys(mEmojiRepeatCount);
+                        mEmojiRepeatCount = 0;
+                    }
+                    mIsRepeatingEmoji = false;
+                    onLongPressed(key);
+                };
+                mHandler.postDelayed(mPendingDoubleLongPress, timeout * 2L);
+            }
+        } else {
+            mPendingLongPress = () -> onLongPressed(key);
+            mHandler.postDelayed(mPendingLongPress, getLongPressTimeout());
+        }
     }
 
     void callListenerOnReleaseKey(final Key releasedKey, final boolean withKeyRegistering) {
@@ -388,8 +448,15 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
     }
 
     public void cancelLongPress() {
-        mHandler.removeCallbacks(mPendingLongPress);
-        mPendingLongPress = null;
+        if (mPendingLongPress != null) {
+            mHandler.removeCallbacks(mPendingLongPress);
+            mPendingLongPress = null;
+        }
+        if (mPendingDoubleLongPress != null) {
+            mHandler.removeCallbacks(mPendingDoubleLongPress);
+            mPendingDoubleLongPress = null;
+        }
+        stopEmojiRepeat();
     }
 
     public boolean onDown(final MotionEvent e) {
@@ -398,6 +465,8 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
         final Key key = getKey(x, y);
         releaseCurrentKey(false /* withKeyRegistering */);
         mCurrentKey = key;
+        mIsRepeatingEmoji = false;
+        mEmojiRepeatCount = 0;
         if (key == null) {
             return false;
         }
@@ -416,6 +485,9 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
         final Key key = getKey(x, y);
         final Runnable pendingKeyDown = mPendingKeyDown;
         final Key currentKey = mCurrentKey;
+        final boolean wasRepeatingEmoji = mIsRepeatingEmoji;
+        mIsRepeatingEmoji = false;
+        mEmojiRepeatCount = 0;
         releaseCurrentKey(false /* withKeyRegistering */);
 
         final boolean isShowingPopupKeysPanel = isShowingPopupKeysPanel();
@@ -425,6 +497,10 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
             final int translatedY = mPopupKeysPanel.translateY(y);
             mPopupKeysPanel.onUpEvent(translatedX, translatedY, mPointerId, eventTime);
             dismissPopupKeysPanel();
+        } else if (wasRepeatingEmoji) {
+            if (key != null) {
+                mEmojiViewCallback.onRepeatEnded(key);
+            }
         } else if (key == currentKey && pendingKeyDown != null) {
             pendingKeyDown.run();
             // Trigger key-release event a little later so that a user can see visual feedback.
@@ -438,6 +514,8 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
     }
 
     public boolean onCancel(final MotionEvent e) {
+        mIsRepeatingEmoji = false;
+        mEmojiRepeatCount = 0;
         releaseCurrentKey(false);
         dismissPopupKeysPanel();
         cancelLongPress();
@@ -453,6 +531,11 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
         // Touched key has changed, release previous key's callbacks and
         // re-register them for the new key.
         if (key != mCurrentKey && !isShowingPopupKeyboard) {
+            if (mIsRepeatingEmoji && mCurrentKey != null) {
+                mEmojiViewCallback.onRepeatEnded(mCurrentKey);
+            }
+            mIsRepeatingEmoji = false;
+            mEmojiRepeatCount = 0;
             releaseCurrentKey(false);
             mCurrentKey = key;
             cancelLongPress();

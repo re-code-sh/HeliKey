@@ -326,6 +326,33 @@ public final class EmojiPalettesView extends LinearLayout
     }
 
     @Override
+    public void onRepeatKey(final Key key) {
+        final int code = key.getCode();
+        mKeyboardActionListener.onPressKey(code, 1, 1, HapticEvent.KEY_PRESS);
+        if (code == KeyCode.MULTIPLE_CODE_POINTS) {
+            mKeyboardActionListener.onTextInput(key.getOutputText());
+        } else if (code != KeyCode.UNSPECIFIED) {
+            mKeyboardActionListener.onCodeInput(code, NOT_A_COORDINATE, NOT_A_COORDINATE, true);
+        }
+        mKeyboardActionListener.onReleaseKey(code, false);
+    }
+
+    @Override
+    public void onRepeatEnded(final Key key) {
+        addRecentKey(key);
+        if (Settings.getValues().mAlphaAfterEmojiInEmojiView) {
+            mKeyboardActionListener.onCodeInput(KeyCode.ALPHA, NOT_A_COORDINATE, NOT_A_COORDINATE, false);
+        }
+    }
+
+    @Override
+    public void onDeleteRepeatedKeys(final int count) {
+        for (int i = 0; i < count; i++) {
+            mKeyboardActionListener.onCodeInput(KeyCode.DELETE, NOT_A_COORDINATE, NOT_A_COORDINATE, false);
+        }
+    }
+
+    @Override
     public void onRemoveRecentsKey(Key key)
     {
         getRecentsKeyboard().removeRecentsKey(key);

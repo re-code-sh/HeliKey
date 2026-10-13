@@ -79,6 +79,7 @@ public class SettingsValues {
     public final boolean mShowTldPopupKeys;
     public final boolean mSpaceForLangChange;
     public final boolean mShowsEmojiKey;
+    public final boolean mHoldForEmoji;
     public final boolean mShowsDpadKey;
     public final boolean mVarToolbarDirection;
     public final boolean mCommaKeyShortHold;
@@ -222,6 +223,7 @@ public class SettingsValues {
         mShowTldPopupKeys = prefs.getBoolean(Settings.PREF_SHOW_TLD_POPUP_KEYS, Defaults.PREF_SHOW_TLD_POPUP_KEYS);
         mSpaceForLangChange = prefs.getBoolean(Settings.PREF_SPACE_TO_CHANGE_LANG, Defaults.PREF_SPACE_TO_CHANGE_LANG);
         mShowsEmojiKey = prefs.getBoolean(Settings.PREF_SHOW_EMOJI_KEY, Defaults.PREF_SHOW_EMOJI_KEY);
+        mHoldForEmoji = prefs.getBoolean(Settings.PREF_HOLD_FOR_EMOJI, Defaults.PREF_HOLD_FOR_EMOJI);
         mShowsDpadKey = prefs.getBoolean(Settings.PREF_SHOW_DPAD_KEY, Defaults.PREF_SHOW_DPAD_KEY);
         mVarToolbarDirection = mToolbarMode != ToolbarMode.HIDDEN && prefs.getBoolean(Settings.PREF_VARIABLE_TOOLBAR_DIRECTION, Defaults.PREF_VARIABLE_TOOLBAR_DIRECTION);
         mCommaKeyShortHold = prefs.getBoolean(Settings.PREF_COMMA_KEY_SHORT_HOLD, Defaults.PREF_COMMA_KEY_SHORT_HOLD);

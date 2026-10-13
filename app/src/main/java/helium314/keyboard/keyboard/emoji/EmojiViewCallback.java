@@ -28,4 +28,10 @@ public interface EmojiViewCallback {
     String getDescription(String emoji);
 
     void onRemoveRecentsKey(Key key);
+ 
+    default void onRepeatKey(Key key) {}
+
+    default void onRepeatEnded(Key key) {}
+
+    default void onDeleteRepeatedKeys(int count) {}
 }

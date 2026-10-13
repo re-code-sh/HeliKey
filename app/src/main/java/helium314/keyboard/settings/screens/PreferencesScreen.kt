@@ -74,6 +74,7 @@ fun PreferencesScreen(
         Settings.PREF_SHOW_LANGUAGE_SWITCH_KEY,
         Settings.PREF_LANGUAGE_SWITCH_KEY,
         Settings.PREF_SHOW_EMOJI_KEY,
+        Settings.PREF_HOLD_FOR_EMOJI,
         Settings.PREF_SHOW_DPAD_KEY,
         Settings.PREF_COMMA_KEY_SHORT_HOLD,
         if (prefs.getBoolean(Settings.PREF_COMMA_KEY_SHORT_HOLD, Defaults.PREF_COMMA_KEY_SHORT_HOLD))
@@ -162,6 +163,9 @@ fun createPreferencesSettings(context: Context) = listOf(
     },
     Setting(context, Settings.PREF_SHOW_EMOJI_KEY, R.string.show_emoji_key) {
         SwitchPreference(it, Defaults.PREF_SHOW_EMOJI_KEY) { KeyboardSwitcher.getInstance().reloadKeyboard() }
+    },
+    Setting(context, Settings.PREF_HOLD_FOR_EMOJI, R.string.hold_for_emoji, R.string.hold_for_emoji_summary) {
+        SwitchPreference(it, Defaults.PREF_HOLD_FOR_EMOJI)
     },
     Setting(context, Settings.PREF_SHOW_DPAD_KEY, R.string.show_dpad_key) {
         SwitchPreference(it, Defaults.PREF_SHOW_DPAD_KEY) { KeyboardSwitcher.getInstance().reloadKeyboard() }
