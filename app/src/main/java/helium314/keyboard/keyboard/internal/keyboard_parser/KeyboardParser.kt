@@ -20,6 +20,8 @@ import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.POPUP_KEYS_LAYOUT
 import helium314.keyboard.latin.utils.POPUP_KEYS_NUMBER
+import helium314.keyboard.latin.utils.getRemoveZwnjKey
+import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.latin.utils.replaceFirst
 import helium314.keyboard.latin.utils.splitAt
 import helium314.keyboard.latin.utils.sumOf
@@ -251,7 +253,9 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
         // add zwnj key next to space if necessary
         val spaceIndex = functionalKeysBottom.indexOfFirst { it.label == KeyLabel.SPACE && it.width <= 0 } // width could be 0 or -1
         if (spaceIndex >= 0) {
-            if (params.mLocaleKeyboardInfos.hasZwnjKey && params.mId.element.isAlphabet) {
+            val shouldAddZwnj = params.mLocaleKeyboardInfos.hasZwnjKey
+                && !getRemoveZwnjKey(params.mId.subtype.rawSubtype, context.prefs())
+            if (shouldAddZwnj && params.mId.element.isAlphabet) {
                 functionalKeysBottom.add(spaceIndex + 1, TextKeyData(label = KeyLabel.ZWNJ))
             }
         }

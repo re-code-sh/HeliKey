@@ -939,6 +939,19 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         return true;
     }
 
+    public boolean revertDoubleSpaceZwnj() {
+        if (DEBUG_BATCH_NESTING) checkBatchEdit();
+        final CharSequence textBeforeCursor = getTextBeforeCursor(1, 0);
+        if (textBeforeCursor == null || textBeforeCursor.length() < 1
+                || textBeforeCursor.charAt(0) != Constants.CODE_ZWNJ) {
+            return false;
+        }
+        deleteTextBeforeCursor(1);
+        final String singleSpace = " ";
+        commitText(singleSpace, 1);
+        return true;
+    }
+
     public boolean revertSwapPunctuation() {
         if (DEBUG_BATCH_NESTING) checkBatchEdit();
         // Here we test whether we indeed have a space and something else before us. This should not
