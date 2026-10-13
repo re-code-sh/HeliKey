@@ -83,7 +83,7 @@
     <!-- Option to repeat emoji on hold -->
     <string name="hold_for_emoji">Hold for emoji</string>
     <!-- Description for repeating emoji on hold -->
-    <string name="hold_for_emoji_summary">Repeat emoji when held, long press longer to show popup menu</string>
+    <string name="hold_for_emoji_summary">Repeat emoji when held, swipe up or down to show menu</string>
     <!-- Option to show shortcut key to d-pad -->
     <string name="show_dpad_key">D-pad key</string>
     <!-- Units abbreviation for the duration (milliseconds) -->

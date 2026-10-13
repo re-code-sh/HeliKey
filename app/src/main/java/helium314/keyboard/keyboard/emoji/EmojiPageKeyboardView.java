@@ -13,6 +13,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import helium314.keyboard.keyboard.PopupTextView;
@@ -20,6 +21,7 @@ import helium314.keyboard.latin.utils.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
@@ -80,11 +82,14 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
     private Key mCurrentKey;
     private Runnable mPendingKeyDown;
     private Runnable mPendingLongPress;
-    private Runnable mPendingDoubleLongPress;
     private Runnable mEmojiRepeatRunnable;
     private boolean mIsRepeatingEmoji = false;
     private int mEmojiRepeatCount = 0;
     private final Handler mHandler;
+    private final int mTouchSlop;
+    private int mDownX, mDownY;
+    private long mDownTime;
+    private boolean mMenuOpenedBySwipe = false;
 
     // More keys keyboard
     private final View mPopupKeysKeyboardContainer;
@@ -105,6 +110,7 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
             final int defStyle) {
         super(context, attrs, defStyle);
         mHandler = new Handler();
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
         mPopupKeysPlacerView = new FrameLayout(context, attrs);
 
@@ -369,6 +375,11 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
         return popupKeys != null && popupKeys.length > 0;
     }
 
+    private boolean isVerticalSwipe(final int deltaX, final int deltaY, final int keyHeight) {
+        final int threshold = Math.max(keyHeight / 3, mTouchSlop * 2);
+        return Math.abs(deltaY) >= threshold && Math.abs(deltaY) > Math.abs(deltaX) * 1.1f;
+    }
+
     private void stopEmojiRepeat() {
         if (mEmojiRepeatRunnable != null) {
             mHandler.removeCallbacks(mEmojiRepeatRunnable);
@@ -393,6 +404,7 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
             };
             mPendingLongPress = () -> {
                 if (mCurrentKey != key) return;
+                disallowParentInterceptTouchEvent(true);
                 if (mPendingKeyDown != null) {
                     mHandler.removeCallbacks(mPendingKeyDown);
                     mPendingKeyDown = null;
@@ -401,20 +413,6 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
                 mEmojiRepeatRunnable.run();
             };
             mHandler.postDelayed(mPendingLongPress, timeout);
-
-            if (hasPopupMenu(key)) {
-                mPendingDoubleLongPress = () -> {
-                    if (mCurrentKey != key) return;
-                    stopEmojiRepeat();
-                    if (mEmojiRepeatCount > 0) {
-                        mEmojiViewCallback.onDeleteRepeatedKeys(mEmojiRepeatCount);
-                        mEmojiRepeatCount = 0;
-                    }
-                    mIsRepeatingEmoji = false;
-                    onLongPressed(key);
-                };
-                mHandler.postDelayed(mPendingDoubleLongPress, timeout * 2L);
-            }
         } else {
             mPendingLongPress = () -> onLongPressed(key);
             mHandler.postDelayed(mPendingLongPress, getLongPressTimeout());
@@ -452,10 +450,6 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
             mHandler.removeCallbacks(mPendingLongPress);
             mPendingLongPress = null;
         }
-        if (mPendingDoubleLongPress != null) {
-            mHandler.removeCallbacks(mPendingDoubleLongPress);
-            mPendingDoubleLongPress = null;
-        }
         stopEmojiRepeat();
     }
 
@@ -465,8 +459,12 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
         final Key key = getKey(x, y);
         releaseCurrentKey(false /* withKeyRegistering */);
         mCurrentKey = key;
+        mDownX = x;
+        mDownY = y;
+        mDownTime = SystemClock.uptimeMillis();
         mIsRepeatingEmoji = false;
         mEmojiRepeatCount = 0;
+        mMenuOpenedBySwipe = false;
         if (key == null) {
             return false;
         }
@@ -486,8 +484,10 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
         final Runnable pendingKeyDown = mPendingKeyDown;
         final Key currentKey = mCurrentKey;
         final boolean wasRepeatingEmoji = mIsRepeatingEmoji;
+        final boolean menuOpenedBySwipe = mMenuOpenedBySwipe;
         mIsRepeatingEmoji = false;
         mEmojiRepeatCount = 0;
+        mMenuOpenedBySwipe = false;
         releaseCurrentKey(false /* withKeyRegistering */);
 
         final boolean isShowingPopupKeysPanel = isShowingPopupKeysPanel();
@@ -497,6 +497,8 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
             final int translatedY = mPopupKeysPanel.translateY(y);
             mPopupKeysPanel.onUpEvent(translatedX, translatedY, mPointerId, eventTime);
             dismissPopupKeysPanel();
+        } else if (menuOpenedBySwipe) {
+            // Menu was opened by swipe, do nothing extra
         } else if (wasRepeatingEmoji) {
             if (key != null) {
                 mEmojiViewCallback.onRepeatEnded(key);
@@ -516,6 +518,7 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
     public boolean onCancel(final MotionEvent e) {
         mIsRepeatingEmoji = false;
         mEmojiRepeatCount = 0;
+        mMenuOpenedBySwipe = false;
         releaseCurrentKey(false);
         dismissPopupKeysPanel();
         cancelLongPress();
@@ -523,14 +526,54 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
     }
 
     public boolean onMove(final MotionEvent e) {
-        final int x = (int)e.getX();
-        final int y = (int)e.getY();
-        final Key key = getKey(x, y);
+        final int x = (int) e.getX();
+        final int y = (int) e.getY();
         final boolean isShowingPopupKeyboard = isShowingPopupKeysPanel() && mPopupKeysKeyboardView.getVisibility() == VISIBLE;
+
+        if (isShowingPopupKeyboard) {
+            final long eventTime = e.getEventTime();
+            final int translatedX = mPopupKeysPanel.translateX(x);
+            final int translatedY = mPopupKeysPanel.translateY(y);
+            mPopupKeysPanel.onMoveEvent(translatedX, translatedY, mPointerId, eventTime);
+            mLastX = x;
+            mLastY = y;
+            return true;
+        }
+
+        if (Settings.getValues().mHoldForEmoji && mCurrentKey != null && !mMenuOpenedBySwipe) {
+            final int deltaX = x - mDownX;
+            final int deltaY = y - mDownY;
+            final DynamicGridKeyboard keyboard = (DynamicGridKeyboard) getKeyboard();
+            final boolean isRecents = keyboard != null && keyboard.isRecents();
+            final long touchDuration = SystemClock.uptimeMillis() - mDownTime;
+            final boolean canTriggerSwipeMenu = isRecents || mIsRepeatingEmoji || touchDuration >= 150;
+
+            if (canTriggerSwipeMenu && hasPopupMenu(mCurrentKey) && isVerticalSwipe(deltaX, deltaY, mCurrentKey.getHeight())) {
+                mMenuOpenedBySwipe = true;
+                stopEmojiRepeat();
+                cancelLongPress();
+                if (mEmojiRepeatCount > 0) {
+                    mEmojiViewCallback.onDeleteRepeatedKeys(mEmojiRepeatCount);
+                    mEmojiRepeatCount = 0;
+                    mIsRepeatingEmoji = false;
+                }
+                if (mPendingKeyDown != null) {
+                    mHandler.removeCallbacks(mPendingKeyDown);
+                    mPendingKeyDown = null;
+                }
+                disallowParentInterceptTouchEvent(true);
+                mLastX = x;
+                mLastY = y;
+                onLongPressed(mCurrentKey);
+                return true;
+            }
+        }
+
+        final Key key = getKey(x, y);
 
         // Touched key has changed, release previous key's callbacks and
         // re-register them for the new key.
-        if (key != mCurrentKey && !isShowingPopupKeyboard) {
+        if (key != mCurrentKey) {
             if (mIsRepeatingEmoji && mCurrentKey != null) {
                 mEmojiViewCallback.onRepeatEnded(mCurrentKey);
             }
@@ -545,15 +588,12 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
             if (key == null) {
                 return false;
             }
+            mDownX = x;
+            mDownY = y;
+            mDownTime = SystemClock.uptimeMillis();
+            mMenuOpenedBySwipe = false;
             registerPress(key);
             registerLongPress(key);
-        }
-
-        if (isShowingPopupKeyboard) {
-            final long eventTime = e.getEventTime();
-            final int translatedX = mPopupKeysPanel.translateX(x);
-            final int translatedY = mPopupKeysPanel.translateY(y);
-            mPopupKeysPanel.onMoveEvent(translatedX, translatedY, mPointerId, eventTime);
         }
 
         mLastX = x;
