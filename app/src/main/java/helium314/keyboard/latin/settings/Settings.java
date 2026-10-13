@@ -94,6 +94,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_LANGUAGE_SWITCH_KEY = "language_switch_key";
     public static final String PREF_SHOW_EMOJI_KEY = "show_emoji_key";
     public static final String PREF_HOLD_FOR_EMOJI = "hold_for_emoji";
+    public static final String PREF_HOLD_FOR_EMOJI_REPEAT_INTERVAL = "hold_for_emoji_repeat_interval";
     public static final String PREF_SHOW_DPAD_KEY = "show_dpad_key";
     public static final String PREF_VARIABLE_TOOLBAR_DIRECTION = "var_toolbar_direction";
     public static final String PREF_ADDITIONAL_SUBTYPES = "additional_subtypes";

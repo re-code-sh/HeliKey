@@ -100,6 +100,7 @@
     <string name="show_emoji_key">کلید ایموجی</string>
     <string name="hold_for_emoji">تکرار ایموجی با نگه‌داشتن</string>
     <string name="hold_for_emoji_summary">تکرار مکرر ایموجی هنگام نگه‌داشتن، و باز شدن منو با کشیدن به بالا یا پایین</string>
+    <string name="hold_for_emoji_repeat_interval">سرعت تکرار ایموجی</string>
     <string name="ime_settings">تنظیمات HeliBoard</string>
     <string name="settings_category_additional_keys">کلیدهای بیشتر</string>
     <string name="settings_category_experimental">آزمایشی</string>

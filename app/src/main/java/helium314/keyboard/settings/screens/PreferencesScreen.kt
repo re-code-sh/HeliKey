@@ -75,6 +75,8 @@ fun PreferencesScreen(
         Settings.PREF_LANGUAGE_SWITCH_KEY,
         Settings.PREF_SHOW_EMOJI_KEY,
         Settings.PREF_HOLD_FOR_EMOJI,
+        if (prefs.getBoolean(Settings.PREF_HOLD_FOR_EMOJI, Defaults.PREF_HOLD_FOR_EMOJI))
+            Settings.PREF_HOLD_FOR_EMOJI_REPEAT_INTERVAL else null,
         Settings.PREF_SHOW_DPAD_KEY,
         Settings.PREF_COMMA_KEY_SHORT_HOLD,
         if (prefs.getBoolean(Settings.PREF_COMMA_KEY_SHORT_HOLD, Defaults.PREF_COMMA_KEY_SHORT_HOLD))
@@ -166,6 +168,16 @@ fun createPreferencesSettings(context: Context) = listOf(
     },
     Setting(context, Settings.PREF_HOLD_FOR_EMOJI, R.string.hold_for_emoji, R.string.hold_for_emoji_summary) {
         SwitchPreference(it, Defaults.PREF_HOLD_FOR_EMOJI)
+    },
+    Setting(context, Settings.PREF_HOLD_FOR_EMOJI_REPEAT_INTERVAL, R.string.hold_for_emoji_repeat_interval) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_HOLD_FOR_EMOJI_REPEAT_INTERVAL,
+            range = 30f..300f,
+            stepSize = 10,
+            description = { stringResource(R.string.abbreviation_unit_milliseconds, it.toString()) }
+        )
     },
     Setting(context, Settings.PREF_SHOW_DPAD_KEY, R.string.show_dpad_key) {
         SwitchPreference(it, Defaults.PREF_SHOW_DPAD_KEY) { KeyboardSwitcher.getInstance().reloadKeyboard() }

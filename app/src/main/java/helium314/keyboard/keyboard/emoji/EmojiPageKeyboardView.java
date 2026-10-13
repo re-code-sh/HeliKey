@@ -391,7 +391,7 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
         cancelLongPress();
         if (Settings.getValues().mHoldForEmoji) {
             final int timeout = getLongPressTimeout();
-            final int repeatInterval = getResources().getInteger(R.integer.config_key_repeat_interval);
+            final int repeatInterval = Math.max(20, Settings.getValues().mHoldForEmojiRepeatInterval);
             mEmojiRepeatRunnable = new Runnable() {
                 @Override
                 public void run() {
