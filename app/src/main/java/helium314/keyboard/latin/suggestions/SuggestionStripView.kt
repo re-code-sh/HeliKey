@@ -216,13 +216,9 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
 
     fun setRtl(isRtlLanguage: Boolean) {
         val newLayoutDirection: Int
-        if (Settings.getValues().mFixedToolbarDirectionLtr) {
-            newLayoutDirection = LAYOUT_DIRECTION_LTR
-            direction = 1
-            toolbarExpandKey.scaleX = if (toolbarContainer.visibility != VISIBLE) 1f else -1f
-        } else if (!Settings.getValues().mVarToolbarDirection) {
+        if (!Settings.getValues().mVarToolbarDirection)
             newLayoutDirection = LAYOUT_DIRECTION_LOCALE
-        } else {
+        else {
             newLayoutDirection = if (isRtlLanguage) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
             direction = if (isRtlLanguage) -1 else 1
             toolbarExpandKey.scaleX = (if (toolbarContainer.visibility != VISIBLE) 1f else -1f) * direction

@@ -1319,7 +1319,8 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
 
         final int code = key.getCode();
         final long pressDuration = Math.max(0, Math.max(eventTime - mDownTime, SystemClock.elapsedRealtime() - mStartTime));
-        if (Settings.getValues().mCommaKeyShortHold && isCommaKey(key) && pressDuration < 50) {
+        final SettingsValues settingsValues = Settings.getValues();
+        if (settingsValues.mCommaKeyShortHold && isCommaKey(key) && pressDuration < settingsValues.mCommaKeyShortHoldDuration) {
             callListenerOnRelease(key, code, false);
             return;
         }
