@@ -15,5 +15,8 @@ tools/*.txt
 *.patch
 *.diff
 *.sh
+key.properties
+*.jks
+*.keystore
 build_artifacts/
 .codegraph/

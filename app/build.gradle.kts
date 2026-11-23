@@ -6,6 +6,15 @@ plugins {
     kotlin("plugin.compose") version "2.4.0"
 }
 
+// Test signing key for CI debug APKs: if app/key.properties exists (created by CI from
+// GitHub secrets), debug builds are signed with the stable test keystore, so updates install
+// over previous CI builds. Without it, the default debug key is used.
+val keystorePropertiesFile = file("key.properties")
+val keystoreProperties = java.util.Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+}
+
 android {
     compileSdk = 37
 
@@ -20,6 +29,17 @@ android {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    }
+
+    signingConfigs {
+        if (keystorePropertiesFile.exists()) {
+            create("test") {
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
+        }
     }
 
     buildTypes {
@@ -40,6 +60,10 @@ android {
             // and for better performance in case users want to install a debug APK
             isMinifyEnabled = true
             isJniDebuggable = false
+            if (keystorePropertiesFile.exists()) {
+                // stable test key, so CI debug APKs update over previous ones
+                signingConfig = signingConfigs.getByName("test")
+            }
             applicationIdSuffix = ".debug"
         }
         create("runTests") { // build variant for running tests on CI that skips tests known to fail
