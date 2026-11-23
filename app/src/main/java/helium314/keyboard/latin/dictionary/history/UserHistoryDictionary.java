@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0 AND GPL-3.0-only
  */
 
-package helium314.keyboard.latin.personalization;
+package helium314.keyboard.latin.dictionary.history;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.inputmethod.latin.BinaryDictionary;
 import helium314.keyboard.latin.dictionary.Dictionary;
@@ -17,7 +16,6 @@ import helium314.keyboard.latin.dictionary.ExpandableBinaryDictionary;
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.makedict.DictionaryHeader;
 
-import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
@@ -27,26 +25,17 @@ import java.util.Map;
  * typist over time.
  */
 public class UserHistoryDictionary extends ExpandableBinaryDictionary {
-    static final String NAME = UserHistoryDictionary.class.getSimpleName();
+    public static final String NAME = UserHistoryDictionary.class.getSimpleName();
 
-    // TODO: Make this constructor private
-    UserHistoryDictionary(final Context context, final Locale locale) {
-        super(context, getUserHistoryDictName(NAME, locale, null), locale, Dictionary.TYPE_USER_HISTORY, null);
+    UserHistoryDictionary(Context context, Locale locale) {
+        super(context, getDictName(NAME, locale, null), locale, Dictionary.TYPE_USER_HISTORY, null);
         if (mLocale != null && mLocale.toString().length() > 1) {
             reloadDictionaryIfRequired();
         }
     }
 
-    /**
-     * @returns the name of the {@link UserHistoryDictionary}.
-     */
-    static String getUserHistoryDictName(final String name, final Locale locale, @Nullable final File dictFile) {
-        return getDictName(name, locale, dictFile);
-    }
-
-    public static UserHistoryDictionary getDictionary(final Context context, final Locale locale,
-            final File dictFile, final String dictNamePrefix) {
-        return PersonalizationHelper.getUserHistoryDictionary(context, locale);
+    public static UserHistoryDictionary getDictionary(Context context, Locale locale) {
+        return UserHistoryDictUtils.getUserHistoryDictionary(context, locale);
     }
 
     /**

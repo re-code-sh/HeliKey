@@ -25,11 +25,11 @@ import helium314.keyboard.keyboard.KeyboardTheme;
 import helium314.keyboard.keyboard.internal.KeyboardState;
 import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos;
 import helium314.keyboard.latin.InputAttributes;
-import helium314.keyboard.latin.PunctuationSuggestions;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.permissions.PermissionsUtil;
+import helium314.keyboard.latin.suggestions.PunctuationSuggestions;
 import helium314.keyboard.latin.utils.FoldableUtils;
 import helium314.keyboard.latin.utils.InputTypeUtils;
 import helium314.keyboard.latin.utils.JniUtils;
@@ -93,7 +93,7 @@ public class SettingsValues {
     public final int mLanguageSwipeDistance;
     public final int mTouchpadSensitivity;
     public final boolean mTouchpadEdgeScroll;
-    public final boolean mDeleteSwipeEnabled;
+    public final int mDeleteSwipe;
     public final boolean mAutospaceAfterPunctuation;
     public final boolean mAutospaceAfterSuggestion;
     public final boolean mAutospaceAfterGestureTyping;
@@ -293,7 +293,7 @@ public class SettingsValues {
         mTouchpadSensitivity = prefs.getInt(Settings.PREF_TOUCHPAD_SENSITIVITY,
             Defaults.PREF_TOUCHPAD_SENSITIVITY);
         mTouchpadEdgeScroll = prefs.getBoolean(Settings.PREF_TOUCHPAD_EDGE_SCROLL, Defaults.PREF_TOUCHPAD_EDGE_SCROLL);
-        mDeleteSwipeEnabled = prefs.getBoolean(Settings.PREF_DELETE_SWIPE, Defaults.PREF_DELETE_SWIPE);
+        mDeleteSwipe = prefs.getInt(Settings.PREF_DELETE_SWIPE, Defaults.PREF_DELETE_SWIPE);
         mAutospaceAfterPunctuation = prefs.getBoolean(Settings.PREF_AUTOSPACE_AFTER_PUNCTUATION, Defaults.PREF_AUTOSPACE_AFTER_PUNCTUATION);
         mAutospaceAfterSuggestion = prefs.getBoolean(Settings.PREF_AUTOSPACE_AFTER_SUGGESTION, Defaults.PREF_AUTOSPACE_AFTER_SUGGESTION);
         mAutospaceAfterGestureTyping = prefs.getBoolean(Settings.PREF_AUTOSPACE_AFTER_GESTURE_TYPING, Defaults.PREF_AUTOSPACE_AFTER_GESTURE_TYPING);
@@ -305,8 +305,7 @@ public class SettingsValues {
 
         mIsFloatingKeyboard = !mIsLocked && SettingsKt.isFloatingKeyboardEnabled(context);
         mFloatingWidth = SettingsKt.readFloatingWidth(context);
-        mFloatingHeight = mIsFloatingKeyboard && mHasHardwareKeyboard && prefs.getBoolean(Settings.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD, Defaults.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD)
-                          ? 0 : SettingsKt.readFloatingHeight(context);
+        mFloatingHeight = mIsFloatingKeyboard ? SettingsKt.readFloatingHeight(context) : 0;
         mKeyboardHeightScale = mIsFloatingKeyboard ? 1f : Settings.readHeightScale(prefs, isLandscape, isFolded);
         mOneHandedModeEnabled = !mIsFloatingKeyboard && Settings.readOneHandedModeEnabled(prefs, isLandscape, mIsSplitKeyboardEnabled, isFolded);
         mOneHandedModeGravity = Settings.readOneHandedModeGravity(prefs, isLandscape, mIsSplitKeyboardEnabled, isFolded);
@@ -332,7 +331,7 @@ public class SettingsValues {
                 mBlockPotentiallyOffensive,
                 prefs.getBoolean(Settings.PREF_GESTURE_SPACE_AWARE, Defaults.PREF_GESTURE_SPACE_AWARE)
         );
-        mSpacingAndPunctuations = new SpacingAndPunctuations(res, mUrlDetectionEnabled);
+        mSpacingAndPunctuations = new SpacingAndPunctuations(res, mUrlDetectionEnabled, mLocale);
         mBottomPaddingScale = mIsFloatingKeyboard ? 0f : Settings.readBottomPaddingScale(prefs, isLandscape, isFolded);
         mSidePaddingScale = Settings.readSidePaddingScale(prefs, isLandscape, mIsSplitKeyboardEnabled, isFolded);
         mLongPressSymbolsForNumpad = prefs.getBoolean(Settings.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD, Defaults.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD);
@@ -421,63 +420,5 @@ public class SettingsValues {
         // disable if permission not granted
         prefs.edit().putBoolean(Settings.PREF_USE_CONTACTS, false).apply();
         return false;
-    }
-
-    public String dump() {
-        final StringBuilder sb = new StringBuilder("Current settings :");
-        sb.append("\n   mSpacingAndPunctuations = ");
-        sb.append("" + mSpacingAndPunctuations.dump());
-        sb.append("\n   mAutoCap = ");
-        sb.append("" + mAutoCap);
-        sb.append("\n   mVibrateOn = ");
-        sb.append("" + mVibrateOn);
-        sb.append("\n   mSoundOn = ");
-        sb.append("" + mSoundOn);
-        sb.append("\n   mKeyPreviewPopupOn = ");
-        sb.append("" + mKeyPreviewPopupOn);
-        sb.append("\n   mShowsVoiceInputKey = ");
-        sb.append("" + mShowsVoiceInputKey);
-        sb.append("\n   mLanguageSwitchKeyToOtherImes = ");
-        sb.append("" + mLanguageSwitchKeyToOtherImes);
-        sb.append("\n   mLanguageSwitchKeyToOtherSubtypes = ");
-        sb.append("" + mLanguageSwitchKeyToOtherSubtypes);
-        sb.append("\n   mUsePersonalizedDicts = ");
-        sb.append("" + mUsePersonalizedDicts);
-        sb.append("\n   mUseDoubleSpacePeriod = ");
-        sb.append("" + mUseDoubleSpacePeriod);
-        sb.append("\n   mBlockPotentiallyOffensive = ");
-        sb.append("" + mBlockPotentiallyOffensive);
-        sb.append("\n   mBigramPredictionEnabled = ");
-        sb.append("" + mBigramPredictionEnabled);
-        sb.append("\n   mGestureInputEnabled = ");
-        sb.append("" + mGestureInputEnabled);
-        sb.append("\n   mGestureTrailEnabled = ");
-        sb.append("" + mGestureTrailEnabled);
-        sb.append("\n   mGestureFloatingPreviewTextEnabled = ");
-        sb.append("" + mGestureFloatingPreviewTextEnabled);
-        sb.append("\n   mSlidingKeyInputPreviewEnabled = ");
-        sb.append("" + mSlidingKeyInputPreviewEnabled);
-        sb.append("\n   mKeyLongpressTimeout = ");
-        sb.append("" + mKeyLongpressTimeout);
-        sb.append("\n   mLocale = ");
-        sb.append("" + mLocale);
-        sb.append("\n   mInputAttributes = ");
-        sb.append("" + mInputAttributes);
-        sb.append("\n   mKeypressVibrationDuration = ");
-        sb.append("" + mKeypressVibrationDuration);
-        sb.append("\n   mKeypressSoundVolume = ");
-        sb.append("" + mKeypressSoundVolume);
-        sb.append("\n   mAutoCorrectEnabled = ");
-        sb.append("" + mAutoCorrectEnabled);
-        sb.append("\n   mAutoCorrectionThreshold = ");
-        sb.append("" + mAutoCorrectionThreshold);
-        sb.append("\n   mAutoCorrectionEnabledPerUserSettings = ");
-        sb.append("" + mAutoCorrectionEnabledPerUserSettings);
-        sb.append("\n   mSuggestionsEnabledPerUserSettings = ");
-        sb.append("" + mSuggestionsEnabled);
-        sb.append("\n   mDisplayOrientation = ");
-        sb.append("" + mDisplayOrientation);
-        sb.append("\n   mAppWorkarounds = ");
-        return sb.toString();
     }
 }

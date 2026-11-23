@@ -23,18 +23,18 @@ import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.latin.DictionaryFacilitator;
 import helium314.keyboard.latin.DictionaryFacilitatorLruCache;
 import helium314.keyboard.latin.InputAttributes;
+import helium314.keyboard.latin.InputStyle;
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodSubtype;
-import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.common.ComposedData;
 import helium314.keyboard.latin.settings.Defaults;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValuesForSuggestion;
+import helium314.keyboard.latin.suggestions.SuggestionResults;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.SubtypeSettings;
 import helium314.keyboard.latin.utils.SubtypeUtilsAdditional;
-import helium314.keyboard.latin.utils.SuggestionResults;
 
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
@@ -160,7 +160,7 @@ public final class AndroidSpellCheckerService extends SpellCheckerService
             DictionaryFacilitator dictionaryFacilitatorForLocale = mDictionaryFacilitatorCache.get(locale);
             return dictionaryFacilitatorForLocale.getSuggestionResults(composedData, ngramContext,
                     keyboard, mSettingsValuesForSuggestion,
-                    sessionId, SuggestedWords.INPUT_STYLE_TYPING);
+                    sessionId, InputStyle.TYPING);
         } finally {
             if (sessionId != null) {
                 mSessionIdPool.add(sessionId);

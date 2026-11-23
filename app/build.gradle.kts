@@ -13,8 +13,8 @@ android {
         applicationId = "helium314.keyboard"
         minSdk = 21
         targetSdk = 37
-        versionCode = 4201
-        versionName = "4.2"
+        versionCode = 4301
+        versionName = "4.3-beta2"
         ndk {
             abiFilters.clear()
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
@@ -52,7 +52,7 @@ android {
             isJniDebuggable = false
             signingConfig = signingConfigs.getByName("debug")
             applicationIdSuffix = ".debug"
-            isDefault = true
+            //isDefault = true // would be nice as default, but breaks unit test handling in Android Studio
         }
 
         androidComponents.onVariants { variant: ApplicationVariant ->
