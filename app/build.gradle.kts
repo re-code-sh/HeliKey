@@ -1,4 +1,6 @@
 import com.android.build.api.variant.ApplicationVariant
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -10,9 +12,9 @@ plugins {
 // GitHub secrets), debug builds are signed with the stable test keystore, so updates install
 // over previous CI builds. Without it, the default debug key is used.
 val keystorePropertiesFile = file("key.properties")
-val keystoreProperties = java.util.Properties()
+val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
