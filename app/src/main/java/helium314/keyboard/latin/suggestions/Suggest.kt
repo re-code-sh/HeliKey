@@ -23,6 +23,7 @@ import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.define.DecoderSpecificConstants.SHOULD_AUTO_CORRECT_USING_NON_WHITE_LISTED_SUGGESTION
 import helium314.keyboard.latin.define.DecoderSpecificConstants.SHOULD_REMOVE_PREVIOUSLY_REJECTED_SUGGESTION
 import helium314.keyboard.latin.dictionary.Dictionary
+import helium314.keyboard.latin.settings.ForcedAutocorrection
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.settings.SettingsValuesForSuggestion
 import helium314.keyboard.latin.utils.AutoCorrectionUtils
@@ -115,7 +116,7 @@ class Suggest(private val mDictionaryFacilitator: DictionaryFacilitator) {
         val firstOccurrenceOfTypedWordInSuggestions = SuggestedWordInfo.removeDupsAndTypedWord(capitalizedTypedWord, suggestionsContainer)
         makeFirstTwoSuggestionsNonEmoji(suggestionsContainer)
 
-        val (allowsToBeAutoCorrected, hasAutoCorrection) = shouldBeAutoCorrected(
+        var (allowsToBeAutoCorrected, hasAutoCorrection) = shouldBeAutoCorrected(
             trailingSingleQuotesCount,
             capitalizedTypedWord,
             suggestionsContainer.firstOrNull(),
@@ -132,6 +133,30 @@ class Suggest(private val mDictionaryFacilitator: DictionaryFacilitator) {
             firstOccurrenceOfTypedWordInSuggestions,
             typedWordFirstOccurrenceWordInfo
         )
+        // Forced auto-corrections from the user's own list apply even when auto-correction
+        // is off: they are an explicit instruction, not a dictionary guess. The replacement
+        // becomes the first suggestion (the auto-correction slot, index 1, once the typed
+        // word is added at index 0 below), so committing it reuses the normal auto-correction
+        // path, including the underline and backspace-to-revert.
+        // Not applied to predictions or resumed (re-correction) suggestions.
+        val forcedReplacement =
+            if (wordComposer.isComposingWord && !wordComposer.isResumed) {
+                val values = Settings.getValues()
+                ForcedAutocorrection.lookup(
+                    values.mForcedAutocorrectionEnabled, values.mForcedAutocorrections,
+                    values.mForcedAutocorrectionDisabled, typedWordString
+                )
+            } else null
+        if (forcedReplacement != null) {
+            val forcedInfo = SuggestedWordInfo(
+                forcedReplacement, "", SuggestedWordInfo.MAX_SCORE,
+                SuggestedWordInfo.KIND_CORRECTION or SuggestedWordInfo.KIND_FLAG_APPROPRIATE_FOR_AUTO_CORRECTION,
+                Dictionary.DICTIONARY_USER_TYPED, SuggestedWordInfo.NOT_AN_INDEX, SuggestedWordInfo.NOT_A_CONFIDENCE
+            ).also { it.isForcedCorrection = true }
+            suggestionsContainer.removeAll { it.word == forcedReplacement }
+            suggestionsContainer.add(0, forcedInfo)
+            hasAutoCorrection = true
+        }
         val typedWordInfo = SuggestedWordInfo(typedWordString, "", SuggestedWordInfo.MAX_SCORE,
             SuggestedWordInfo.KIND_TYPED, typedWordFirstOccurrenceWordInfo?.sourceDict ?: Dictionary.DICTIONARY_USER_TYPED,
             SuggestedWordInfo.NOT_AN_INDEX , SuggestedWordInfo.NOT_A_CONFIDENCE)

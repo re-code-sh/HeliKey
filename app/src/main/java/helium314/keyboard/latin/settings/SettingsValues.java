@@ -159,6 +159,9 @@ public class SettingsValues {
     public final boolean mAutoCorrectCapitalizedSuggestion;
     public final boolean mBackspaceRevertsAutocorrect;
     public final boolean mAutoCorrectShortcuts;
+    public final boolean mForcedAutocorrectionEnabled;
+    public final java.util.Map<String, String> mForcedAutocorrections;
+    public final java.util.Set<String> mForcedAutocorrectionDisabled;
     public final boolean mSuggestionsEnabled;
     private final boolean mOverrideShowingSuggestions;
     public final boolean mSuggestClipboardContent;
@@ -248,6 +251,9 @@ public class SettingsValues {
         mScoreLimitForAutocorrect = (int)((1.14 - 0.2 * Math.pow(autoCorrectConfidence + 0.47, 3.5)) * 900000);
         mAutoCorrectCapitalizedSuggestion = prefs.getBoolean(Settings.PREF_AUTOCORRECT_CAPITALIZED_SUGGESTION, Defaults.PREF_AUTOCORRECT_CAPITALIZED_SUGGESTION);
         mAutoCorrectShortcuts = prefs.getBoolean(Settings.PREF_AUTOCORRECT_SHORTCUTS, Defaults.PREF_AUTOCORRECT_SHORTCUTS);
+        mForcedAutocorrectionEnabled = prefs.getBoolean(Settings.PREF_FORCED_AUTOCORRECTION_ENABLED, Defaults.PREF_FORCED_AUTOCORRECTION_ENABLED);
+        mForcedAutocorrections = ForcedAutocorrection.load(prefs);
+        mForcedAutocorrectionDisabled = ForcedAutocorrection.disabledTriggers(prefs);
         mBackspaceRevertsAutocorrect = prefs.getBoolean(Settings.PREF_BACKSPACE_REVERTS_AUTOCORRECT, Defaults.PREF_BACKSPACE_REVERTS_AUTOCORRECT);
         mBigramPredictionEnabled = prefs.getBoolean(Settings.PREF_BIGRAM_PREDICTIONS, Defaults.PREF_BIGRAM_PREDICTIONS);
         mSuggestPunctuation = prefs.getBoolean(Settings.PREF_SUGGEST_PUNCTUATION, Defaults.PREF_SUGGEST_PUNCTUATION);

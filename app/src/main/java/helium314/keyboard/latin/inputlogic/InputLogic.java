@@ -1158,7 +1158,14 @@ public final class InputLogic {
         }
         // isComposingWord() may have changed since we stored wasComposing
         if (mWordComposer.isComposingWord()) {
-            if (settingsValues.mAutoCorrectEnabled && ! isInlineEmojiSearchAction()) {
+            // A forced auto-correction from the user's own list applies even when
+            // auto-correction is off, but never in fields that are not general text
+            // input (passwords, e-mail addresses, URLs, ...).
+            final SuggestedWordInfo autoCorrectionOrNull = mWordComposer.getAutoCorrectionOrNull();
+            final boolean hasForcedCorrection = autoCorrectionOrNull != null
+                    && autoCorrectionOrNull.isForcedCorrection()
+                    && settingsValues.mInputAttributes.mIsGeneralTextInput;
+            if ((settingsValues.mAutoCorrectEnabled || hasForcedCorrection) && ! isInlineEmojiSearchAction()) {
                 final String separator = shouldAvoidSendingCode ? LastComposedWord.NOT_A_SEPARATOR
                         : StringUtils.newSingleCodePointString(codePoint);
                 commitCurrentAutoCorrection(settingsValues, separator, handler);

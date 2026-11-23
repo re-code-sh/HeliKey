@@ -154,6 +154,22 @@
     <string name="auto_correct_shortcuts">Auto-correct shortcuts</string>
     <!-- Description for auto_correct_shortcuts -->
     <string name="auto_correct_shortcuts_summary">When enabled shortcuts might be expanded by autocorrect</string>
+    <!-- Option to enable forced auto-corrections -->
+    <string name="forced_autocorrection">Forced auto-corrections</string>
+    <!-- Description for forced auto-corrections -->
+    <string name="forced_autocorrection_summary">Always correct the words in the list, even when auto-correction is off</string>
+    <!-- Title of the forced auto-corrections screen -->
+    <string name="forced_autocorrection_screen_title">Forced auto-corrections</string>
+    <!-- Description shown on the forced auto-corrections screen -->
+    <string name="forced_autocorrection_screen_summary">Words in this list are always corrected to the replacement, even when auto-correction is off. Matching is exact and whole-word only. Suggestions need to stay on for this to work.</string>
+    <!-- Hint for the trigger (typed word) field -->
+    <string name="forced_autocorrection_trigger_hint">Word to replace</string>
+    <!-- Hint for the replacement field -->
+    <string name="forced_autocorrection_replacement_hint">Replace with</string>
+    <!-- Button to add a forced correction -->
+    <string name="forced_autocorrection_add_button">Add forced correction</string>
+    <!-- Warning when a new entry would create a loop with an existing entry -->
+    <string name="forced_autocorrection_loop_warning">This would create a loop with an existing entry</string>
     <!-- Option to enable auto correction for for capitalized suggestions (by pressing shift) -->
     <string name="auto_correct_capitalized_suggestions">Auto-correct capitalized suggestions</string>
     <!-- Description for auto_correct_capitalized_suggestions -->
