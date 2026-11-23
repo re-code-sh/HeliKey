@@ -45,6 +45,13 @@ data class SuggestedWordInfo(
      */
     var wordToReplace: String? = null
 
+    /**
+     * True when this suggestion is a forced auto-correction from the user's own list
+     * ([helium314.keyboard.latin.settings.ForcedAutocorrection]). Such a correction applies
+     * even when auto-correction is off.
+     */
+    var isForcedCorrection: Boolean = false
+
     var originalScore = 0 // relevant only for background data gathering, todo: remove when gathering period is over
     val codePointCount by lazy { StringUtils.codePointCount(word) }
 
